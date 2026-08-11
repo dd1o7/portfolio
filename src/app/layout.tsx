@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { siteConfig } from "@/site.config";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+/**
+ * next/font downloads these at build time and serves them from our own origin —
+ * there is no runtime request to Google, and no `<link>` in the document.
+ */
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+const jetbrainsMono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -26,31 +30,23 @@ export const metadata: Metadata = {
 };
 
 /**
- * Applies the saved theme before the page paints.
- *
- * Without this the page renders in the OS theme first and then snaps to the
- * user's choice — a visible flash. It has to be inline and synchronous to run
- * before first paint.
- */
-const themeScript = `
-(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light"){document.documentElement.setAttribute("data-theme",t)}}catch(e){}})();
-`;
-
-/**
  * Root layout — only the document shell.
  *
- * The public site's header and footer live in `(site)/layout.tsx`, and the
- * admin has its own chrome in `admin/layout.tsx`, so the two never mix.
+ * The public site's chrome lives in `(site)/layout.tsx`, and the admin has its
+ * own in `admin/layout.tsx`, so the two never mix.
+ *
+ * The site is dark only, so there is no theme script here. `color-scheme: dark`
+ * in globals.css and the meta tag below are what stop the browser painting a
+ * white ground before our CSS lands.
  */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <meta name="theme-color" content="#101d1c" />
       </head>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>

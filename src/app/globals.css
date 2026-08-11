@@ -7,37 +7,33 @@
    the look of the whole site, change these values — you should not need to
    touch any other file.
 
-   Theming has three states:
-     1. :root                        → light palette (the default)
-     2. prefers-color-scheme: dark   → dark palette when the OS asks for it
-     3. [data-theme="dark|light"]    → manual override from the theme toggle
+   The site is dark only. There is one palette, defined once, on :root.
    ========================================================================= */
 
 :root {
   /* --- Surfaces --------------------------------------------------------- */
-  --bg: #fbfbfa;
-  --bg-subtle: #f3f3f1;
-  --surface: #ffffff;
-  --surface-hover: #f7f7f5;
+  --bg: #101d1c; /* page ground */
+  --surface: #1c2e2b; /* pane fill — used alone on mobile */
+  --surface-blur: rgb(28 46 43 / 0.72); /* pane fill on desktop, with blur */
+  --inset: rgb(16 29 28 / 0.55); /* nested boxes: equations, cards in panes */
 
   /* --- Lines ------------------------------------------------------------ */
-  --border: #e3e3df;
-  --border-strong: #cdcdc7;
+  --border: #26332f; /* pane border, dividers, row rules */
+  --border-focus: #327a69; /* focused pane border, hover borders */
 
   /* --- Text ------------------------------------------------------------- */
-  --text: #15181a;
-  --text-muted: #5c6266;
-  --text-faint: #888e93;
+  --text: #e6efec; /* headings, titles */
+  --text-2: #a8bcb7; /* body prose */
+  --muted: #8aa39d; /* secondary prose, summaries */
+  --dim: #6d857f; /* pane header labels, kickers */
+  --faint: #526661; /* counters, timestamps, footer */
 
   /* --- Accent ----------------------------------------------------------- */
-  --accent: #0c6e78;
-  --accent-hover: #094f57;
-  --accent-subtle: #e4f1f2;
-  --accent-contrast: #ffffff;
-
-  /* --- Status ----------------------------------------------------------- */
-  --status-active: #0f7b4f;
-  --status-draft: #8a6d1f;
+  --accent: #4fc9ab; /* dots, cursor, focus ring, active pill */
+  --accent-bright: #7cdcc3; /* field labels, active status text */
+  --accent-dim: #429e88; /* keybind keys, low-emphasis accent */
+  --accent-wash: rgb(79 201 171 / 0.12); /* fill behind the active pill */
+  --link: #b0ecdb;
 
   /* --- Type scale ------------------------------------------------------- */
   --text-xs: 0.75rem;
@@ -59,87 +55,68 @@
   --container-wide: 62rem;
   --radius: 6px;
   --radius-sm: 4px;
+  --radius-pane: 8px; /* panes only — the shell's one radius */
 
   /* --- Motion ----------------------------------------------------------- */
   --transition: 140ms ease;
 
-  color-scheme: light;
+  color-scheme: dark;
 }
 
-/* Dark palette — applied when the OS prefers dark, unless the user has
-   explicitly chosen light via the toggle. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0c0e10;
-    --bg-subtle: #131619;
-    --surface: #131619;
-    --surface-hover: #191d21;
+/* ----------------------------------------------------------------------------
+   LEGACY — admin only, do not use in new code.
 
-    --border: #23282c;
-    --border-strong: #363d43;
+   /admin is deliberately not part of the window-manager redesign, but it shares
+   this stylesheet. These names keep it rendering. Some map onto a token above;
+   the rest have no equivalent in the new palette and are defined outright.
 
-    --text: #e3e6e8;
-    --text-muted: #98a0a7;
-    --text-faint: #6a727a;
+   Anything here is fair game to delete once nothing under src/app/admin/ or
+   src/components/admin/ references it.
+   ------------------------------------------------------------------------- */
+:root {
+  --text-muted: var(--muted);
+  --text-faint: var(--faint);
+  --border-strong: var(--border-focus);
+  --accent-hover: var(--accent-bright);
 
-    --accent: #7cc7d1;
-    --accent-hover: #a7dce3;
-    --accent-subtle: #10252a;
-    --accent-contrast: #0c0e10;
-
-    --status-active: #5ec98e;
-    --status-draft: #d0aa5a;
-
-    color-scheme: dark;
-  }
-}
-
-/* Dark palette — applied when the user explicitly chooses dark. Must be
-   duplicated (not merged) so the toggle wins in both directions. */
-:root[data-theme="dark"] {
-  --bg: #0c0e10;
-  --bg-subtle: #131619;
-  --surface: #131619;
-  --surface-hover: #191d21;
-
-  --border: #23282c;
-  --border-strong: #363d43;
-
-  --text: #e3e6e8;
-  --text-muted: #98a0a7;
-  --text-faint: #6a727a;
-
-  --accent: #7cc7d1;
-  --accent-hover: #a7dce3;
-  --accent-subtle: #10252a;
-  --accent-contrast: #0c0e10;
-
+  --bg-subtle: #162523;
+  --surface-hover: #243935;
+  --accent-subtle: #1a3d36;
+  --accent-contrast: #0b1614;
   --status-active: #5ec98e;
   --status-draft: #d0aa5a;
-
-  color-scheme: dark;
 }
 
 /* Expose tokens to Tailwind utilities (bg-bg, text-muted, border-border, …) */
 @theme inline {
   --color-bg: var(--bg);
-  --color-bg-subtle: var(--bg-subtle);
   --color-surface: var(--surface);
-  --color-surface-hover: var(--surface-hover);
+  --color-inset: var(--inset);
   --color-border: var(--border);
-  --color-border-strong: var(--border-strong);
+  --color-border-focus: var(--border-focus);
   --color-text: var(--text);
-  --color-muted: var(--text-muted);
-  --color-faint: var(--text-faint);
+  --color-text-2: var(--text-2);
+  --color-muted: var(--muted);
+  --color-dim: var(--dim);
+  --color-faint: var(--faint);
   --color-accent: var(--accent);
+  --color-accent-bright: var(--accent-bright);
+  --color-accent-dim: var(--accent-dim);
+  --color-link: var(--link);
+  --color-accent-wash: var(--accent-wash);
+
+  /* Legacy — see the block above. */
+  --color-bg-subtle: var(--bg-subtle);
+  --color-surface-hover: var(--surface-hover);
+  --color-border-strong: var(--border-strong);
   --color-accent-hover: var(--accent-hover);
   --color-accent-subtle: var(--accent-subtle);
   --color-accent-contrast: var(--accent-contrast);
   --color-status-active: var(--status-active);
   --color-status-draft: var(--status-draft);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 /* ============================================================================
@@ -245,30 +222,23 @@ a {
   border-top: 1px solid var(--border);
 }
 
-/* Theme toggle icons. Chosen purely in CSS so the button needs no JS state:
-   the moon shows in light mode, the sun in dark. Follows the same three-state
-   pattern as the palette above. */
-.theme-icon-sun {
-  display: none;
-}
-.theme-icon-moon {
-  display: block;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .theme-icon-sun {
-    display: block;
-  }
-  :root:not([data-theme="light"]) .theme-icon-moon {
-    display: none;
-  }
-}
-
-:root[data-theme="dark"] .theme-icon-sun {
-  display: block;
-}
-:root[data-theme="dark"] .theme-icon-moon {
-  display: none;
+/* Ambient background: two radial glows and the grid, in one fixed layer.
+   Painted once, behind everything. Never per-pane backgrounds. */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(60rem 40rem at 12% -10%, rgb(79 201 171 / 0.10), transparent 60%),
+    radial-gradient(50rem 35rem at 88% 8%, rgb(50 122 105 / 0.10), transparent 62%),
+    linear-gradient(to right, rgb(38 51 47 / 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(38 51 47 / 0.35) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    44px 44px,
+    44px 44px;
 }
 
 /* ============================================================================
@@ -408,18 +378,8 @@ a {
   margin-top: 0;
 }
 
-/* Shiki dual-theme: swap which theme's colours are visible */
-.prose pre code span {
-  color: var(--shiki-light);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .prose pre code span {
-    color: var(--shiki-dark);
-  }
-}
-:root[data-theme="dark"] .prose pre code span {
-  color: var(--shiki-dark);
-}
+/* Shiki emits a single theme now, so token colours arrive as inline styles and
+   need no help from here. See `prettyCodeOptions` in src/lib/content.ts. */
 
 /* Tables (remark-gfm) */
 .prose table {

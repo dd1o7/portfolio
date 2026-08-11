@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Pane } from "@/components/shell/Pane";
 import { EntryList, type Entry } from "@/components/EntryList";
 import { getCurrentNow, getFeaturedProjects, getResearch } from "@/lib/content";
 import { relativeDate } from "@/lib/utils";
@@ -31,49 +32,53 @@ export default async function HomePage() {
   }));
 
   return (
-    <div className="container-page py-16 sm:py-24">
-      {/* Intro ---------------------------------------------------------- */}
-      <section>
-        <h1 className="text-[var(--text-3xl)] font-semibold tracking-tight">{siteConfig.name}</h1>
-        <p className="mono mt-2 text-[var(--text-muted)]">{siteConfig.tagline}</p>
-        <p className="mt-6 max-w-[38rem] text-[var(--text-md)] leading-[var(--leading-prose)]">
-          {siteConfig.intro}
-        </p>
-      </section>
-
-      {/* Currently ------------------------------------------------------ */}
-      {now && (
-        <section className="mt-14">
-          <div className="flex items-baseline justify-between gap-4">
-            <h2 className="label">Currently</h2>
-            <span className="mono text-[var(--text-faint)]">{relativeDate(now.date)}</span>
-          </div>
-          <div
-            className="prose mt-4 border-l-2 border-[var(--accent)] pl-5"
-            dangerouslySetInnerHTML={{ __html: now.html }}
-          />
-          <Link href="/now" className="mono link-accent mt-4 inline-block">
-            all updates →
-          </Link>
+    /* One pane, wrapping the content this page already had. Phase 2 wires the
+       routes through the shell properly and splits this into master + stack. */
+    <Pane label="~/home" focused>
+      <div className="container-page py-6">
+        {/* Intro -------------------------------------------------------- */}
+        <section>
+          <h1 className="text-[var(--text-3xl)] font-medium tracking-tight">{siteConfig.name}</h1>
+          <p className="mono mt-2 text-[var(--muted)]">{siteConfig.tagline}</p>
+          <p className="mt-6 max-w-[38rem] text-[var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
+            {siteConfig.intro}
+          </p>
         </section>
-      )}
 
-      {/* Projects ------------------------------------------------------- */}
-      {projectEntries.length > 0 && (
-        <section className="mt-16">
-          <SectionHeading label="Selected projects" href="/projects" />
-          <EntryList entries={projectEntries} />
-        </section>
-      )}
+        {/* Currently ---------------------------------------------------- */}
+        {now && (
+          <section className="mt-14">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className="label">Currently</h2>
+              <span className="mono text-[var(--faint)]">{relativeDate(now.date)}</span>
+            </div>
+            <div
+              className="prose mt-4 border-l-2 border-[var(--accent)] pl-5"
+              dangerouslySetInnerHTML={{ __html: now.html }}
+            />
+            <Link href="/now" className="mono link-accent mt-4 inline-block">
+              all updates →
+            </Link>
+          </section>
+        )}
 
-      {/* Research ------------------------------------------------------- */}
-      {researchEntries.length > 0 && (
-        <section className="mt-16">
-          <SectionHeading label="Recent writing" href="/research" />
-          <EntryList entries={researchEntries} />
-        </section>
-      )}
-    </div>
+        {/* Projects ----------------------------------------------------- */}
+        {projectEntries.length > 0 && (
+          <section className="mt-16">
+            <SectionHeading label="Selected projects" href="/projects" />
+            <EntryList entries={projectEntries} />
+          </section>
+        )}
+
+        {/* Research ----------------------------------------------------- */}
+        {researchEntries.length > 0 && (
+          <section className="mt-16">
+            <SectionHeading label="Recent writing" href="/research" />
+            <EntryList entries={researchEntries} />
+          </section>
+        )}
+      </div>
+    </Pane>
   );
 }
 

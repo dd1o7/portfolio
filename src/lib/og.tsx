@@ -14,13 +14,14 @@ export const OG_CONTENT_TYPE = "image/png";
  *
  * Colours are hard-coded rather than read from the design tokens because this
  * renders outside the browser, where CSS custom properties do not exist. If you
- * retheme the site, update these three values to match.
+ * retheme the site, update every value below by hand — including the border
+ * further down — or the social cards will not match.
  */
 export function ogImage({ title, subtitle, kind }: { title: string; subtitle?: string; kind?: string }) {
-  const bg = "#0c0e10";
-  const text = "#e3e6e8";
-  const accent = "#7cc7d1";
-  const muted = "#98a0a7";
+  const bg = "#101d1c";
+  const text = "#e6efec";
+  const accent = "#4fc9ab";
+  const muted = "#8aa39d";
 
   return new ImageResponse(
     (
@@ -83,7 +84,7 @@ export function ogImage({ title, subtitle, kind }: { title: string; subtitle?: s
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            borderTop: "1px solid #23282c",
+            borderTop: "1px solid #26332f",
             paddingTop: 28,
             fontSize: 26,
             color: muted,

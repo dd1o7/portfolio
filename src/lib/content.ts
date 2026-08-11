@@ -104,8 +104,10 @@ export type TaggedItem = (Project | Research) & { kind: "project" | "research" }
    ========================================================================== */
 
 const prettyCodeOptions: PrettyCodeOptions = {
-  // Two themes are emitted at once; globals.css picks which one is visible.
-  theme: { light: "github-light", dark: "github-dark-dimmed" },
+  // The site is dark only, so one theme is enough. With a single theme Shiki
+  // writes token colours as inline styles; globals.css no longer picks between
+  // a light and a dark set.
+  theme: "github-dark-dimmed",
   keepBackground: false,
 };
 
