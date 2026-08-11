@@ -2,23 +2,38 @@
 title: About
 ---
 
-I work at the intersection of machine learning and physical modelling —
-primarily physics-informed neural networks, alongside quantitative finance and
-a rotating cast of problems across tech and science.
+I'm a student working toward research in **physics-informed machine learning** —
+the area where numerical methods for differential equations meet neural
+networks.
 
-What tends to interest me is the point where a method stops working: the
-benchmark that everyone reports, the assumption that quietly holds it up, and
-what happens when that assumption is removed. Most of what I write here is about
-that gap.
+What drew me to it is that it sits on top of real mathematics rather than
+replacing it. A physics-informed network doesn't learn a solution from data
+alone; it's constrained by the equations that govern the system. That makes the
+maths worth understanding properly rather than treating as background.
 
-## What is on this site
+## How I'm going about it
 
-- **Projects** — things I have built, with enough detail to judge whether they
-  work
-- **Research** — notes, paper reactions and writeups, mostly unfinished by design
-- **Now** — what I am actually working on this week
+I'm learning from first principles and in order — mathematical foundations,
+then machine learning fundamentals, then implementing things from scratch rather
+than assembling them from libraries. It's slower than following tutorials, and
+the point is that it's slower: I'd rather be able to derive something than
+recognise it.
 
-## Get in touch
+That work is public, unfinished, and organised by phase. It's currently at the
+beginning.
 
-Happy to hear from anyone working on similar problems, or anyone who thinks
-something here is wrong. Links are in the footer.
+I'm also reading my way through **quantitative finance** independently. It's an
+interest rather than something I've built in yet — the appeal is similar, in
+that the useful parts are the ones with real structure underneath.
+
+## What's on this site
+
+- **Now** — what I'm actually studying and reading this week. The most current
+  thing here.
+- **Projects** — things I've built, added as they become real rather than in
+  advance.
+- **Research** — notes and writeups. Empty for now; it'll fill as I have
+  something worth saying.
+
+I'd rather this page be accurate than impressive. If something here interests
+you, or you think I've got something wrong, the links in the footer work.

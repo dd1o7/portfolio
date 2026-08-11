@@ -7,24 +7,24 @@
 
 export const siteConfig = {
   /** Shown in the header and used as the base of every page title. */
-  name: "Dewanshu",
+  name: "Dewanshu Dewangan",
 
   /** Your GitHub username — drives the GitHub activity section. */
   githubHandle: "dd1o7",
 
   /** One line under your name on the homepage. */
-  tagline: "Physics-informed neural networks, quantitative finance, and things in between.",
+  tagline: "Learning machine learning from first principles, toward physics-informed methods.",
 
   /** A short paragraph for the homepage. Longer bio goes in content/site/about.md */
   intro:
-    "I work on physics-informed neural networks, quantitative finance, and assorted problems across tech and science. This site is where I keep track of what I'm building and what I'm reading.",
+    "I'm a student working toward research in physics-informed machine learning — starting from the mathematics and building up, in public. I read about quantitative finance on the side. This site is where I keep track of what I'm learning and what I'm reading.",
 
   /** Full site URL. Used for link previews and the sitemap. */
   url: "https://portfolio-dd1o7.vercel.app",
 
   /** Used for SEO and social previews. */
   description:
-    "Projects, research and notes on physics-informed neural networks, quantitative finance, and applied science.",
+    "Student notes, projects and reading on machine learning from first principles, working toward physics-informed methods.",
 
   /** Contact and social links. Leave a value empty ("") to hide that link. */
   links: {
