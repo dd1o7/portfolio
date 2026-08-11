@@ -4,20 +4,27 @@ Context for Claude Code sessions in this repository.
 
 ## What this is
 
-A personal portfolio for **Dewanshu** — work in physics-informed neural networks
-(PINNs), quantitative finance, and assorted tech/science. Next.js 16 App Router,
-TypeScript, Tailwind v4, deployed on Vercel's free Hobby tier.
+A personal portfolio for **Dewanshu Dewangan** — a student working toward
+research in physics-informed machine learning, with quantitative finance as
+independent reading. Next.js 16 App Router, TypeScript, Tailwind v4, deployed on
+Vercel's free Hobby tier at <https://portfolio-dd1o7.vercel.app>.
 
 **The owner has little web development experience.** Prefer clear code over
 clever code, explain changes in plain terms, and do not introduce a dependency
-where a few lines would do.
+where a few lines would do. Keep anything they need to do themselves in a
+separate, clearly marked section rather than mixed into explanation.
+
+**Never invent content.** An earlier version of this site shipped placeholder
+projects and a research note that described work that did not exist. They were
+removed. This is a portfolio real people will read: if there is no material for a
+page, leave it empty and say so. Ask rather than fill.
 
 ## Core idea
 
 Content is Markdown in `content/`. There is no database — GitHub is the store,
-and a commit to `main` triggers a Vercel redeploy. A future `/admin` dashboard
-(Phase 4) will write those same files via the GitHub Contents API, so both
-editing paths stay interchangeable.
+and a commit to `main` triggers a Vercel redeploy. The `/admin` dashboard writes
+those same files via the GitHub Contents API, so both editing paths are
+interchangeable.
 
 ## Commands
 
@@ -111,6 +118,47 @@ built content to show which entries are still deploying.
 
 **Adding a form field** is one line in `collections.ts` — but the matching Zod
 schema in `content.ts` must be updated too, or the build will reject the file.
+
+## Redesigning the UI — read this first
+
+A redesign is planned. The site was built so this is a theming job, not a
+rewrite. Before changing anything, understand the layers:
+
+**Layer 1 — `src/app/globals.css` (start here).** Every colour, spacing value,
+type size, radius and transition is a CSS custom property defined at the top of
+this file. Changing the palette, the type scale or the density means editing
+these values and nothing else. A large visual change is usually only this.
+
+**Layer 2 — component classes.** Components reference tokens
+(`text-[var(--text-muted)]`, `bg-[var(--surface)]`). They contain no hex values.
+If a redesign needs a new *kind* of colour, add a token first, then use it —
+never hard-code.
+
+**Layer 3 — structure.** Changing layout (e.g. cards instead of rows) means
+editing `components/EntryList.tsx`, which the homepage, `/projects`, `/research`
+and tag pages all render through. Change it once, all four follow. Resist
+writing a second list component.
+
+### Rules that must survive a redesign
+
+- **Three-state theming.** Light/dark is defined three times: bare `:root`
+  (light), `@media (prefers-color-scheme: dark)` guarded with
+  `:root:not([data-theme="light"])`, and `:root[data-theme="dark"]`. All three
+  are required — defining a colour in only one breaks the manual toggle in one
+  direction. The same pattern governs the toggle icons and Shiki's code colours.
+- **No flash on load.** The inline script in `app/layout.tsx` applies the stored
+  theme before first paint. It must stay inline and synchronous in `<head>`.
+- **The toggle holds no React state** — it reads `data-theme` from the DOM and
+  CSS picks the icon. Reintroducing `useState` here brings back a hydration
+  mismatch and trips the `set-state-in-effect` lint rule.
+- **OG images cannot read tokens.** `lib/og.tsx` hard-codes its three colours
+  because it renders outside a browser. Retheme means updating them by hand, or
+  the social cards will not match the site.
+- **Prose styles are hand-written** in `globals.css` (no typography plugin) and
+  cover KaTeX and Shiki output. Restyling article text happens there.
+
+Verify a redesign in **both themes and both viewport sizes**, and check a
+research page specifically — it exercises maths, code blocks and tables.
 
 ## Status
 
