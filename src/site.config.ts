@@ -19,8 +19,8 @@ export const siteConfig = {
   intro:
     "I work on physics-informed neural networks, quantitative finance, and assorted problems across tech and science. This site is where I keep track of what I'm building and what I'm reading.",
 
-  /** Full site URL once deployed. Update after your first Vercel deploy. */
-  url: "https://example.vercel.app",
+  /** Full site URL. Used for link previews and the sitemap. */
+  url: "https://portfolio-dd1o7.vercel.app",
 
   /** Used for SEO and social previews. */
   description:

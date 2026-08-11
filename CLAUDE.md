@@ -125,7 +125,15 @@ schema in `content.ts` must be updated too, or the build will reject the file.
   function returns null on failure and the section hides itself; do not "fix"
   this by throwing. Awaited directly rather than wrapped in Suspense — the page
   is static, so a skeleton would only flash a section that may not exist.
-- ⬜ Phase 5 — OG images, sitemap, RSS, 404 polish.
+- ✅ Phase 5 — OG images (`lib/og.tsx` + per-route `opengraph-image.tsx`),
+  `sitemap.ts`, `robots.ts`, `feed.xml`, `not-found.tsx`.
+
+**OG image colours are hard-coded** in `lib/og.tsx`. They cannot read the CSS
+design tokens because the image renders outside a browser. Retheming the site
+means updating those three values by hand.
+
+**The RSS feed carries summaries, not full bodies.** Article HTML contains
+rendered KaTeX markup that feed readers mangle; a link beats broken equations.
 
 ## Environment variables
 

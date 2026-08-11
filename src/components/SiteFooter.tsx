@@ -30,6 +30,12 @@ export function SiteFooter() {
               {link.label}
             </a>
           ))}
+          <a
+            href="/feed.xml"
+            className="mono text-[var(--text-muted)] transition-colors hover:text-[var(--accent)]"
+          >
+            rss
+          </a>
         </div>
         <p className="mono text-[var(--text-faint)]">
           © {new Date().getFullYear()} {siteConfig.name}
