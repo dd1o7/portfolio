@@ -19,6 +19,10 @@ projects and a research note that described work that did not exist. They were
 removed. This is a portfolio real people will read: if there is no material for a
 page, leave it empty and say so. Ask rather than fill.
 
+**The site is mid-redesign.** See "The redesign" below for the target design and
+which phases have landed. Anything not yet marked complete describes intent, not
+what is on disk.
+
 ## Core idea
 
 Content is Markdown in `content/`. There is no database — GitHub is the store,
@@ -33,6 +37,8 @@ pnpm dev      # local dev server on :3000
 pnpm build    # production build — must pass before pushing
 pnpm lint     # eslint
 ```
+
+This project uses **pnpm**, not npm. `pnpm-lock.yaml` is committed.
 
 ## Layout
 
@@ -50,6 +56,9 @@ src/
   lib/resume.ts     build-time check for public/resume.pdf
   components/       EntryList (presentational), FilterableList (client), header, footer
 ```
+
+Note the `src/` prefix. Paths in any imported design kit that say `app/**` or
+`components/**` mean `src/app/**` and `src/components/**` here.
 
 ## Frontmatter
 
@@ -75,20 +84,22 @@ and no `status` or `stack`.
 
 **now/** — just `date:`, plus optional `title:`.
 
+Content stays in Markdown. Never hardcode copy, project entries or reading-list
+items into a component. If content needs a new field, add it to the frontmatter
+schema first.
+
 ## Conventions that matter
 
 - **Design tokens only.** Colours and spacing come from CSS custom properties in
-  `globals.css` (`var(--accent)`, `var(--text-muted)`, …). Never hard-code a hex
+  `globals.css` (`var(--accent)`, `var(--muted)`, …). Never hard-code a hex
   value in a component — the theme is meant to be swappable from that one file.
-- **Both themes, always.** Light and dark are defined three ways: bare `:root`,
-  `prefers-color-scheme`, and `[data-theme]` for the manual toggle. A colour
-  defined in only one of those breaks the toggle in one direction.
 - **Reuse `EntryList`.** The homepage, both listing pages and tag pages all
   render through it. Do not write another list layout.
 - **`lib/content.ts` is the only place that touches the filesystem for content.**
-- **Maths and code already work.** KaTeX (`$…$` inline, `$$…$$` display) and
-  Shiki highlighting are wired into the Markdown pipeline. Shiki emits both
-  themes at once and CSS picks one — do not switch it to a single theme.
+- **Maths and code render at build time.** KaTeX (`$…$` inline, `$$…$$` display)
+  via `remark-math` + `rehype-katex`, and Shiki highlighting, are already wired
+  into the Markdown pipeline. Never ship `katex.min.js` or `auto-render.js` to
+  the browser.
 
 ## Admin (`/admin`)
 
@@ -119,69 +130,146 @@ built content to show which entries are still deploying.
 **Adding a form field** is one line in `collections.ts` — but the matching Zod
 schema in `content.ts` must be updated too, or the build will reject the file.
 
-## Redesigning the UI — read this first
+**Admin is out of scope for the redesign.** It keeps its current layout. It does
+still consume tokens from `globals.css`, so when the palette changes it needs a
+compatibility pass — any token that is renamed or removed must be updated in
+`src/components/admin/` and `src/app/admin/` too, or those pages break silently.
 
-A redesign is planned. The site was built so this is a theming job, not a
-rewrite. Before changing anything, understand the layers:
+---
 
-**Layer 1 — `src/app/globals.css` (start here).** Every colour, spacing value,
-type size, radius and transition is a CSS custom property defined at the top of
-this file. Changing the palette, the type scale or the density means editing
-these values and nothing else. A large visual change is usually only this.
+# The redesign
 
-**Layer 2 — component classes.** Components reference tokens
-(`text-[var(--text-muted)]`, `bg-[var(--surface)]`). They contain no hex values.
-If a redesign needs a new *kind* of colour, add a token first, then use it —
-never hard-code.
+The site is being rebuilt as a **tiling window manager interface** — Hyprland/i3
+styling: a waybar, workspaces instead of nav items, content in bordered panes
+with terminal-style title bars. Desktop tiles; mobile does not.
 
-**Layer 3 — structure.** Changing layout (e.g. cards instead of rows) means
-editing `components/EntryList.tsx`, which the homepage, `/projects`, `/research`
-and tag pages all render through. Change it once, all four follow. Resist
-writing a second list component.
+The source material is in `kit/` (design brief, phase prompts, and the
+`wm-shell` / `hypr-motion` / `mobile-audit` skills, installed to
+`.claude/skills/`).
 
-### Rules that must survive a redesign
+## Decisions already made
 
-- **Three-state theming.** Light/dark is defined three times: bare `:root`
-  (light), `@media (prefers-color-scheme: dark)` guarded with
-  `:root:not([data-theme="light"])`, and `:root[data-theme="dark"]`. All three
-  are required — defining a colour in only one breaks the manual toggle in one
-  direction. The same pattern governs the toggle icons and Shiki's code colours.
-- **No flash on load.** The inline script in `app/layout.tsx` applies the stored
-  theme before first paint. It must stay inline and synchronous in `<head>`.
-- **The toggle holds no React state** — it reads `data-theme` from the DOM and
-  CSS picks the icon. Reintroducing `useState` here brings back a hydration
-  mismatch and trips the `set-state-in-effect` lint rule.
-- **OG images cannot read tokens.** `lib/og.tsx` hard-codes its three colours
-  because it renders outside a browser. Retheme means updating them by hand, or
-  the social cards will not match the site.
+These were settled before Phase 1 and are not open questions:
+
+- **Dark only.** The light theme, `ThemeToggle`, the no-flash inline script and
+  the three-state theming pattern are all removed. One palette, defined once on
+  bare `:root`. Set `color-scheme: dark` and a dark `<meta name="theme-color">`
+  so browser UI and form controls match.
+- **`/admin` keeps its current design** (see above).
+- **Article pages are master + metadata stack.** `/projects/[slug]` and
+  `/research/[slug]` render the body in the master pane and a stack pane
+  alongside for date, status, tags and links. On mobile the metadata pane
+  follows the body.
+- **Mobile listings are visible with zero interaction.** Someone landing on
+  `/projects` from a search result sees the list immediately. Swipe is a
+  discoverable bonus, never a requirement for reaching content.
+
+## Non-negotiables
+
+These hold for every change. If a request conflicts with one, say so before
+writing code.
+
+- **Workspaces are real routes, not client state.** `/`, `/projects`,
+  `/research`, `/now`, `/about` stay real pages with real `<a href>`. The
+  workspace *animation* comes from the View Transitions API, not from swapping
+  component state. Breaking these URLs breaks RSS, OG images and search.
+- **Only `transform` and `opacity` are animated.** Never `width`, `height`,
+  `top`, `left`, `margin` or `filter` in a transition or keyframe.
+- **No `backdrop-filter` below the `md` breakpoint.** Mobile panes use a solid
+  tinted fill. This is the single biggest mobile performance risk in this design.
+- **`prefers-reduced-motion` is honoured everywhere.** Every animation collapses
+  to a 100ms opacity fade.
+- **Touch targets are ≥44px below `md`.** Pane headers, workspace pills and tag
+  chips all grow on touch; they are deliberately small only on desktop.
+
+## Layout at each breakpoint
+
+| Width | Layout |
+|---|---|
+| `< 640px` | One full-width pane per screen. Workspaces switch by horizontal swipe or by tapping a pill. Stack panes scroll vertically below the master pane. No drag-to-resize, no drag-to-reorder. |
+| `640–1024px` | Two panes maximum, stacked vertically. No drag-to-resize. |
+| `≥ 1024px` | Full tiling: master + stack side by side, draggable split divider, drag-to-reorder, keyboard shortcuts, keybind footer. |
+
+## Design tokens
+
+Defined once in `src/app/globals.css` as CSS custom properties. Never hardcode a
+hex.
+
+```
+--bg:            #101d1c   /* page ground */
+--surface:       #1c2e2b   /* pane fill (solid — used alone on mobile) */
+--surface-blur:  rgb(28 46 43 / 0.72)  /* pane fill on desktop, with backdrop-filter */
+--inset:         rgb(16 29 28 / 0.55)  /* nested boxes: equations, cards inside panes */
+
+--border:        #26332f   /* pane border, dividers, row rules */
+--border-focus:  #327a69   /* focused pane border, hover borders */
+
+--accent:        #4fc9ab   /* the one accent: dots, cursor, focus ring, active pill */
+--accent-bright: #7cdcc3   /* field labels, active status text */
+--accent-dim:    #429e88   /* keybind keys, low-emphasis accent */
+--link:          #b0ecdb
+
+--text:          #e6efec   /* headings, titles */
+--text-2:        #a8bcb7   /* body prose */
+--muted:         #8aa39d   /* secondary prose, summaries */
+--dim:           #6d857f   /* pane header labels, kickers */
+--faint:         #526661   /* counters, timestamps, footer */
+```
+
+Fonts, via `next/font` (self-hosted and subset — never a Google Fonts `<link>`):
+
+- **Inter** — headings and body prose. Headings sit at weight 500, never bolder.
+- **JetBrains Mono** — all interface chrome: pane headers, workspace pills, tags,
+  timestamps, status text, keybinds. Lowercase, letter-spaced. This font is what
+  makes the design read as a window manager; use it for anything that is
+  *interface* rather than *reading*.
+
+Ambient background is a single `position: fixed` layer holding both radial glows
+and the 44px grid. One element, painted once — never per-pane backgrounds.
+
+## Things that carry over
+
+- **OG images cannot read tokens.** `src/lib/og.tsx` hard-codes its three
+  colours because it renders outside a browser. They must be updated by hand to
+  the palette above, or the social cards will not match the site.
 - **Prose styles are hand-written** in `globals.css` (no typography plugin) and
-  cover KaTeX and Shiki output. Restyling article text happens there.
+  cover KaTeX and Shiki output. Restyling article text happens there. Shiki
+  currently emits both light and dark themes with CSS picking one; going
+  dark-only means pinning it to a single theme.
+- **The RSS feed carries summaries, not full bodies.** Article HTML contains
+  rendered KaTeX markup that feed readers mangle; a link beats broken equations.
 
-Verify a redesign in **both themes and both viewport sizes**, and check a
-research page specifically — it exercises maths, code blocks and tables.
+## Verifying a redesign change
 
-## Status
+Check **both viewport sizes**, and check a research article page specifically —
+it exercises maths, code blocks and tables. `pnpm build` must pass before
+claiming a change works.
 
-- ✅ Phase 1 — foundation, design tokens, content pipeline, homepage
-- ✅ Phase 2 — projects, research, now, about, tag pages, tag filtering
-- ✅ Phase 4 — `/admin` dashboard (built before Phase 3: it is the point of the
-  project, and both phases need the same token)
-- ✅ Phase 3 — GitHub activity on `/about` (`lib/github-activity.ts`).
+## Phase status
+
+- ⬜ Phase 1 — tokens, fonts, Waybar, WorkspacePills, Pane, PaneHeader, ambient layer
+- ⬜ Phase 2 — existing routes wired through the shell
+- ⬜ Phase 3 — the three responsive layout modes
+- ⬜ Phase 4 — motion (see the `hypr-motion` skill)
+- ⬜ Phase 5 — `/mobile-audit` and fixes
+- ⬜ Phase 6 — CommandPalette, keybind footer, polish
+
+---
+
+## Pre-redesign status (all shipped and live)
+
+- ✅ Foundation, design tokens, content pipeline, homepage
+- ✅ Projects, research, now, about, tag pages, tag filtering
+- ✅ `/admin` dashboard
+- ✅ GitHub activity on `/about` (`lib/github-activity.ts`).
   Authenticated only: unauthenticated calls are 60/hour *per IP* and Vercel
   shares outgoing IPs between customers, so they fail unpredictably. Cached with
   ISR (`revalidate: 3600`), not cron — Hobby caps cron at once daily. Every
   function returns null on failure and the section hides itself; do not "fix"
   this by throwing. Awaited directly rather than wrapped in Suspense — the page
   is static, so a skeleton would only flash a section that may not exist.
-- ✅ Phase 5 — OG images (`lib/og.tsx` + per-route `opengraph-image.tsx`),
-  `sitemap.ts`, `robots.ts`, `feed.xml`, `not-found.tsx`.
-
-**OG image colours are hard-coded** in `lib/og.tsx`. They cannot read the CSS
-design tokens because the image renders outside a browser. Retheming the site
-means updating those three values by hand.
-
-**The RSS feed carries summaries, not full bodies.** Article HTML contains
-rendered KaTeX markup that feed readers mangle; a link beats broken equations.
+- ✅ OG images (`lib/og.tsx` + per-route `opengraph-image.tsx`), `sitemap.ts`,
+  `robots.ts`, `feed.xml`, `not-found.tsx`
 
 ## Environment variables
 
@@ -190,4 +278,4 @@ rendered KaTeX markup that feed readers mangle; a link beats broken equations.
 `pnpm setup`. The site builds and serves fine without any of them — only
 `/admin` needs them.
 
-The full plan is at `~/.claude/plans/how-to-create-a-unified-babbage.md`.
+The full original plan is at `~/.claude/plans/how-to-create-a-unified-babbage.md`.
