@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio
 
-## Getting Started
+Personal site — projects, research notes, and a `/now` page, built to be updated
+often without friction.
 
-First, run the development server:
+Content is Markdown in `content/`. There is no database: pushing to GitHub
+redeploys the site automatically on Vercel.
+
+**New here? Read [SETUP.md](./SETUP.md)** — it covers running the site locally,
+putting it on GitHub, and deploying it, assuming no prior experience.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Next.js 16 (App Router) · TypeScript · Tailwind v4 · KaTeX for maths · Shiki for
+code · Zod for content validation · Vercel Hobby (free)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Adding content
 
-## Learn More
+Create a Markdown file in the right folder and push:
 
-To learn more about Next.js, take a look at the following resources:
+| Folder | Appears at |
+|---|---|
+| `content/projects/thing.md` | `/projects/thing` |
+| `content/research/note.md` | `/research/note` |
+| `content/now/2026-08-11.md` | `/now` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Field reference is in [CLAUDE.md](./CLAUDE.md). Set `draft: true` to keep
+something visible locally but hidden on the live site.
