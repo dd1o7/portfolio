@@ -1,33 +1,53 @@
 import { PaletteTrigger } from "./PaletteTrigger";
+import { contactLinks } from "@/site.config";
 
 /**
  * The status line at the bottom of the shell.
  *
- * Desktop gets the keybinds; below `lg` it becomes a one-line gesture hint,
- * because none of those keys exist on a phone. Which one shows is CSS, not a
- * hook — there is no behaviour here to gate, and the right one has to be on
- * screen at first paint.
+ * Carries two things: how to drive the site, and how to reach its owner.
+ * The contact links are here on every page because a visitor with thirty
+ * seconds — a recruiter, most likely — should never have to find `/about` to
+ * get an email address. They are repeated in the `~/contact` pane there.
  *
- * Below `md` it also carries the palette trigger, which does not fit in the
- * waybar next to five workspace labels. Only shortcuts that actually work are
- * listed. This replaced `SiteFooter`, so the contact links live in `~/contact`
- * on /about and the feed lives in the waybar and the palette.
+ * Keybinds show at `lg` and a gesture hint below, because none of those keys
+ * exist on a phone. Which one shows is CSS, not a hook — there is no behaviour
+ * to gate, and the right one has to be on screen at first paint.
  */
 export function KeybindFooter() {
+  const links = contactLinks();
+
   return (
     <footer className="shrink-0 border-t border-[var(--border)] px-3 py-2">
-      <div className="flex items-center gap-3 lg:hidden">
-        <p className="mono min-w-0 truncate text-[var(--faint)]">
-          swipe sideways to change workspace
-        </p>
-        <PaletteTrigger className="ml-auto inline-flex md:hidden" />
-      </div>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+        <p className="mono text-[var(--faint)] lg:hidden">swipe sideways to change workspace</p>
 
-      <div className="mono hidden items-center gap-x-5 lg:flex">
-        <Keybind keys="1–5">workspace</Keybind>
-        <Keybind keys="⌘K">palette</Keybind>
-        <Keybind keys="←→">resize split</Keybind>
-        <Keybind keys="esc">close</Keybind>
+        <div className="mono hidden items-center gap-x-5 lg:flex">
+          <Keybind keys="1–5">workspace</Keybind>
+          <Keybind keys="⌘K">palette</Keybind>
+          <Keybind keys="←→">resize split</Keybind>
+          <Keybind keys="esc">close</Keybind>
+        </div>
+
+        <div className="mono ml-auto flex flex-wrap items-center gap-x-4">
+          {links.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+              rel="noopener noreferrer"
+              className="tap-target text-[var(--dim)] transition-colors hover:text-[var(--accent)]"
+            >
+              {link.label}
+            </a>
+          ))}
+          <a
+            href="/feed.xml"
+            className="tap-target text-[var(--dim)] transition-colors hover:text-[var(--accent)]"
+          >
+            rss
+          </a>
+          <PaletteTrigger className="inline-flex md:hidden" />
+        </div>
       </div>
     </footer>
   );

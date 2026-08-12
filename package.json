@@ -10,6 +10,7 @@
     "setup": "node scripts/setup.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "gray-matter": "^4.0.3",
     "jose": "^6.2.8",
     "katex": "^0.18.3",

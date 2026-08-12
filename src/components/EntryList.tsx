@@ -40,9 +40,9 @@ export function EntryList({ entries }: { entries: Entry[] }) {
                 {entry.title}
               </h3>
               <span className="mono shrink-0 text-[var(--faint)]">
-                {entry.badge && (
-                  <span className="mr-3 text-[var(--accent-bright)]">{entry.badge}</span>
-                )}
+                {/* Deliberately not accented — a status word is information,
+                    not emphasis, and the accent is reserved for navigation. */}
+                {entry.badge && <span className="mr-3 text-[var(--muted)]">{entry.badge}</span>}
                 {formatDate(entry.date, { day: undefined })}
               </span>
             </div>

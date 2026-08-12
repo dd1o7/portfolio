@@ -317,18 +317,18 @@ Defined once in `src/app/globals.css` as CSS custom properties. Never hardcode a
 hex.
 
 ```
---bg:            #101d1c   /* page ground */
---surface:       #1c2e2b   /* pane fill (solid — used alone on mobile) */
---surface-blur:  rgb(28 46 43 / 0.72)  /* pane fill on desktop, with backdrop-filter */
---inset:         rgb(16 29 28 / 0.55)  /* nested boxes: equations, cards inside panes */
+--bg:            #0d0f11   /* page ground — near-neutral, 7/255 channel spread */
+--surface:       #15181c   /* pane fill (solid — used alone on mobile) */
+--surface-blur:  rgb(21 24 28 / 0.72)  /* pane fill on desktop, with backdrop-filter */
+--inset:         rgb(0 0 0 / 0.28)     /* nested boxes: equations, cards inside panes */
 
---border:        #26332f   /* pane border, dividers, row rules */
---border-focus:  #327a69   /* focused pane border, hover borders */
+--border:        #30383f   /* pane border, dividers, row rules */
+--border-focus:  #3b776b   /* focused pane border — 3.42:1, meets the 3:1 UI floor */
 
---accent:        #4fc9ab   /* the one accent: dots, cursor, focus ring, active pill */
---accent-bright: #7cdcc3   /* field labels, active status text */
---accent-dim:    #429e88   /* keybind keys, low-emphasis accent */
---link:          #b0ecdb
+--accent:        #4db6a0   /* focus ring, active pill, focused pane dot */
+--accent-bright: #7ad0bd   /* field labels in the metadata pane */
+--accent-dim:    #3d9384   /* keybind keys, low-emphasis accent */
+--link:          #8fd3c2
 
 --split:         62%       /* master column width at lg; SplitDivider rewrites it */
 
@@ -347,8 +347,23 @@ Fonts, via `next/font` (self-hosted and subset — never a Google Fonts `<link>`
   makes the design read as a window manager; use it for anything that is
   *interface* rather than *reading*.
 
-Ambient background is a single `position: fixed` layer holding both radial glows
-and the 44px grid. One element, painted once — never per-pane backgrounds.
+**The ground is near-neutral on purpose.** When the page, the panes and the
+accent all share one hue, nothing can stand out against anything and the result
+reads as decoration rather than as a document — which is the wrong signal for an
+audience of researchers and recruiters. Colour is reserved for meaning: links,
+focus, and the active workspace. Pane dots are accent **only on the focused
+pane**; status badges are `--muted`, not accent.
+
+Every text token clears WCAG AA on both the ground and the pane fill, except
+`--faint`, which is supplementary (counters, timestamps) and clears the 3:1 UI
+floor at 4.01. Verify with composited alpha, not `getComputedStyle` alone — the
+active pill sits on a 10%-opacity wash, and treating that as opaque reports a
+false failure.
+
+Ambient background is a single `position: fixed` layer holding the 44px grid.
+One element, painted once — never per-pane backgrounds. The two radial glows it
+used to carry were removed: they were the main thing tinting the whole page one
+colour, and the element most likely to read as trying too hard.
 
 ## Things that carry over
 

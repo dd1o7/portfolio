@@ -28,11 +28,11 @@ export function Pane({ label, counter, focused = false, children }: PaneProps) {
         // performance risk in this design, so it starts at the md breakpoint.
         "bg-[var(--surface)] md:bg-[var(--surface-blur)] md:backdrop-blur-md",
         focused
-          ? "border-[var(--border-focus)] shadow-[0_0_18px_-6px_rgb(79_201_171/0.5)]"
+          ? "border-[var(--border-focus)] shadow-[0_0_18px_-6px_rgb(77_182_160/0.35)]"
           : "border-[var(--border)]",
       ].join(" ")}
     >
-      <PaneHeader label={label} counter={counter} />
+      <PaneHeader label={label} counter={counter} focused={focused} />
       {/* On desktop a pane scrolls inside itself and the page does not scroll at
           all. On mobile the page scrolls normally and panes size to content. */}
       <div className="min-h-0 flex-1 px-5 py-5 sm:px-7 sm:py-6 lg:overflow-y-auto">{children}</div>

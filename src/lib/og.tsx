@@ -18,10 +18,10 @@ export const OG_CONTENT_TYPE = "image/png";
  * further down — or the social cards will not match.
  */
 export function ogImage({ title, subtitle, kind }: { title: string; subtitle?: string; kind?: string }) {
-  const bg = "#101d1c";
-  const text = "#e6efec";
-  const accent = "#4fc9ab";
-  const muted = "#8aa39d";
+  const bg = "#0d0f11";
+  const text = "#e9ecef";
+  const accent = "#4db6a0";
+  const muted = "#9aa3ad";
 
   return new ImageResponse(
     (
@@ -84,7 +84,7 @@ export function ogImage({ title, subtitle, kind }: { title: string; subtitle?: s
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            borderTop: "1px solid #26332f",
+            borderTop: "1px solid #30383f",
             paddingTop: 28,
             fontSize: 26,
             color: muted,

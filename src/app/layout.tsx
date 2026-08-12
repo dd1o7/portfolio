@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { siteConfig } from "@/site.config";
@@ -46,9 +47,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
-        <meta name="theme-color" content="#101d1c" />
+        <meta name="theme-color" content="#0d0f11" />
       </head>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        {/* Vercel Web Analytics. Cookieless, so no consent banner, and it is
+            served from this origin (/_vercel/insights/…) rather than a third
+            party — which keeps the site's zero-external-request property.
+            It no-ops anywhere but a Vercel deployment, so a 404 for that path
+            when running locally is expected. */}
+        <Analytics />
+      </body>
     </html>
   );
 }
