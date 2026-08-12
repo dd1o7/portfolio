@@ -58,7 +58,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
               ← projects
             </Link>
 
-            <h1 className="mt-5 text-[var(--text-2xl)] font-medium tracking-tight">
+            <h1 className="mt-5 text-[length:var(--text-2xl)] font-medium tracking-tight">
               {project.title}
             </h1>
             <p className="mt-2 text-[var(--muted)]">{project.summary}</p>

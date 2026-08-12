@@ -52,7 +52,7 @@ export default async function AdminDashboard() {
   } catch (error) {
     return (
       <div className="container-page py-16">
-        <h1 className="mono text-[var(--text-lg)] font-medium">Could not reach GitHub</h1>
+        <h1 className="mono text-[length:var(--text-lg)] font-medium">Could not reach GitHub</h1>
         <p className="mt-3 max-w-prose text-[var(--text-muted)]">
           {error instanceof Error ? error.message : "Unknown error."}
         </p>
@@ -65,12 +65,12 @@ export default async function AdminDashboard() {
 
   return (
     <div className="container-page py-12">
-      <h1 className="text-[var(--text-2xl)] font-semibold tracking-tight">Dashboard</h1>
+      <h1 className="text-[length:var(--text-2xl)] font-semibold tracking-tight">Dashboard</h1>
 
       {/* The gentle nudge: how long since the last /now update. */}
       <div className="mt-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--bg-subtle)] p-4">
         {latestNow ? (
-          <p className="text-[var(--text-sm)]">
+          <p className="text-[length:var(--text-sm)]">
             Last <span className="mono">/now</span> update was{" "}
             <strong>{relativeDate(latestNow.date)}</strong>
             {staleDays !== null && staleDays >= 14 && (
@@ -78,7 +78,7 @@ export default async function AdminDashboard() {
             )}
           </p>
         ) : (
-          <p className="text-[var(--text-sm)]">
+          <p className="text-[length:var(--text-sm)]">
             No <span className="mono">/now</span> updates yet.
           </p>
         )}

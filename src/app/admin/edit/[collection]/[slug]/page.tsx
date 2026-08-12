@@ -57,7 +57,7 @@ export default async function EditPage({ params }: PageProps<"/admin/edit/[colle
         ← dashboard
       </Link>
 
-      <h1 className="mt-4 text-[var(--text-xl)] font-semibold tracking-tight">
+      <h1 className="mt-4 text-[length:var(--text-xl)] font-semibold tracking-tight">
         {isNew ? `New ${collection.label.toLowerCase()}` : String(frontmatter.title ?? slug)}
       </h1>
 

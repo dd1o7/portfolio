@@ -42,7 +42,7 @@ export default async function TagPage({ params }: PageProps<"/tags/[tag]">) {
             ← all work
           </Link>
 
-          <h1 className="mt-5 mb-6 text-[var(--text-2xl)] font-medium tracking-tight">
+          <h1 className="mt-5 mb-6 text-[length:var(--text-2xl)] font-medium tracking-tight">
             {displayTag}
           </h1>
 

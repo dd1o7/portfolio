@@ -51,7 +51,7 @@ export default async function ResearchItemPage({ params }: PageProps<"/research/
               ← research
             </Link>
 
-            <h1 className="mt-5 text-[var(--text-2xl)] font-medium tracking-tight">{item.title}</h1>
+            <h1 className="mt-5 text-[length:var(--text-2xl)] font-medium tracking-tight">{item.title}</h1>
             <p className="mt-2 text-[var(--muted)]">{item.summary}</p>
 
             <div

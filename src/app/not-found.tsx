@@ -15,7 +15,7 @@ export default function NotFound() {
       <main className="flex flex-1 flex-col p-3">
         <Pane label="~/404" focused>
           <p className="mono text-[var(--faint)]">404</p>
-          <h1 className="mt-3 text-[var(--text-2xl)] font-medium tracking-tight">Page not found</h1>
+          <h1 className="mt-3 text-[length:var(--text-2xl)] font-medium tracking-tight">Page not found</h1>
           <p className="mt-2 max-w-prose text-[var(--muted)]">
             That page does not exist — it may have been renamed or removed.
           </p>

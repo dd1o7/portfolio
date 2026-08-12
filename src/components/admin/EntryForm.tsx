@@ -210,9 +210,9 @@ function FieldInput({
           className="mt-1 accent-[var(--accent)]"
         />
         <span>
-          <span className="text-[var(--text-sm)]">{field.label}</span>
+          <span className="text-[length:var(--text-sm)]">{field.label}</span>
           {field.help && (
-            <span className="block text-[var(--text-xs)] text-[var(--text-faint)]">
+            <span className="block text-[length:var(--text-xs)] text-[var(--text-faint)]">
               {field.help}
             </span>
           )}
@@ -279,7 +279,7 @@ function FieldInput({
       )}
 
       {field.help && (
-        <p className="mt-1 text-[var(--text-xs)] text-[var(--text-faint)]">{field.help}</p>
+        <p className="mt-1 text-[length:var(--text-xs)] text-[var(--text-faint)]">{field.help}</p>
       )}
     </div>
   );

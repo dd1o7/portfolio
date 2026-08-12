@@ -44,7 +44,7 @@ export async function GitHubActivity() {
                 </div>
 
                 {repo.description && (
-                  <p className="mt-1.5 text-[var(--text-sm)] text-[var(--muted)]">
+                  <p className="mt-1.5 text-[length:var(--text-base)] text-[var(--muted)]">
                     {repo.description}
                   </p>
                 )}

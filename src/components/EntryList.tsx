@@ -47,7 +47,7 @@ export function EntryList({ entries }: { entries: Entry[] }) {
               </span>
             </div>
 
-            <p className="mt-1 max-w-[36rem] text-[var(--text-sm)] text-[var(--muted)]">
+            <p className="mt-1 max-w-[36rem] text-[length:var(--text-base)] text-[var(--muted)]">
               {entry.summary}
             </p>
 

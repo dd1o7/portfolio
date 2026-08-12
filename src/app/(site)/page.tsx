@@ -85,11 +85,11 @@ export default async function HomePage() {
       master={
         <Pane label="~/home" focused>
           <div className="max-w-[var(--container)]">
-            <h1 className="text-[var(--text-3xl)] font-medium tracking-tight">
+            <h1 className="text-[length:var(--text-3xl)] font-medium tracking-tight">
               {siteConfig.name}
             </h1>
             <p className="mono mt-2 text-[var(--muted)]">{siteConfig.tagline}</p>
-            <p className="mt-6 text-[var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
+            <p className="mt-6 text-[length:var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
               {siteConfig.intro}
             </p>
           </div>

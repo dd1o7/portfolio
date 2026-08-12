@@ -7,7 +7,7 @@
 export function NotConfigured() {
   return (
     <div className="container-page py-16">
-      <h1 className="text-[var(--text-2xl)] font-semibold tracking-tight">Almost there</h1>
+      <h1 className="text-[length:var(--text-2xl)] font-semibold tracking-tight">Almost there</h1>
       <p className="mt-3 max-w-prose text-[var(--text-muted)]">
         The dashboard can sign you in, but it cannot save anything yet — it does not know which
         repository to write to.
@@ -21,7 +21,7 @@ export function NotConfigured() {
         </ul>
       </div>
 
-      <ol className="mt-6 max-w-prose list-decimal space-y-2 pl-5 text-[var(--text-sm)]">
+      <ol className="mt-6 max-w-prose list-decimal space-y-2 pl-5 text-[length:var(--text-sm)]">
         <li>
           Run <code className="mono">pnpm setup</code> locally — it prints the values and the exact
           steps for creating the GitHub token.

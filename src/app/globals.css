@@ -158,8 +158,9 @@ html {
     scroll-behavior: auto !important;
   }
 
-  /* Panes still announce themselves, but without the scale. */
-  .pane {
+  /* Panes and the palette still announce themselves, but without the scale. */
+  .pane,
+  .palette-panel {
     animation-name: fade-in !important;
   }
 }
@@ -418,6 +419,92 @@ html[data-ws="back"]::view-transition-new(workspace) {
 }
 html[data-ws="back"]::view-transition-old(workspace) {
   animation: ws-exit-right 300ms var(--ease-wind) both;
+}
+
+/* ============================================================================
+   COMMAND PALETTE
+
+   Built on <dialog>, so the focus trap, the top layer and Escape all come from
+   the platform. Below md it is a full-screen sheet; above, a floating panel.
+   ========================================================================= */
+
+dialog.palette {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow: hidden;
+}
+
+dialog.palette[open] {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+dialog.palette::backdrop {
+  background: rgb(10 18 17 / 0.72);
+}
+
+.palette-panel {
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.palette-list {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 0.5rem;
+  overscroll-behavior: contain;
+}
+
+@media (width >= 48rem) {
+  /* The one place a blur is allowed — md and up, same rule as the panes. */
+  dialog.palette::backdrop {
+    backdrop-filter: blur(2px);
+  }
+
+  dialog.palette[open] {
+    align-items: flex-start;
+    padding-top: 10vh;
+  }
+
+  .palette-panel {
+    width: min(34rem, calc(100vw - 2rem));
+    max-height: 70vh;
+    border: 1px solid var(--border-focus);
+    border-radius: var(--radius-pane);
+    box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.6);
+  }
+}
+
+dialog.palette[open] .palette-panel {
+  animation: palette-in 180ms var(--ease-overshot) both;
+}
+
+dialog.palette[open]::backdrop {
+  animation: fade-in 180ms var(--ease-smooth) both;
+}
+
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ============================================================================

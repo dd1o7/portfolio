@@ -57,7 +57,6 @@ src/
   components/
     EntryList.tsx   the one list layout — homepage, listings, tag pages
     shell/          the window-manager chrome (see below)
-    SiteFooter.tsx  replaced by KeybindFooter in Phase 6
 ```
 
 Note the `src/` prefix. Paths in any imported design kit that say `app/**` or
@@ -213,8 +212,24 @@ for visual reasons.
 | `MetaPane` | The stack pane beside an article: frontmatter that is not the body. |
 | `SplitDivider` | Drags the master/stack split. Writes `--split` on `<html>` inside `requestAnimationFrame`. |
 | `WorkspaceSwiper` | Renders `<main>`; adds swipe-between-workspaces below `lg`. |
+| `CommandPalette` | A `<dialog>`, so the focus trap, top layer and Escape come from the platform. Full-screen sheet below `md`. |
+| `PaletteTrigger` | The visible way in. Waybar at `md`+, footer below — a 44px button and five pill labels do not both fit 320px. |
+| `KeyboardShortcuts` | Renders nothing. `1`–`5` and `⌘K`, desktop only. |
+| `KeybindFooter` | Keybinds at `lg`, a gesture hint below. Replaced `SiteFooter`. |
+| `ActiveTitle` | The focused workspace, named in the waybar. `md`+ only. |
 | `useMediaQuery` | The one responsive hook. `DESKTOP` (1024px) and `TABLET` (640px). |
 | `Clock`, `AmbientBackground` | Waybar clock; the one fixed glow-and-grid layer. |
+
+**Everything the palette reaches is also reachable by clicking something
+visible** — the pills, the listings, the `~/contact` pane. Keyboard shortcuts
+are an enhancement and are desktop-only; the palette itself is not, which is why
+its trigger exists at every width. `src/lib/palette.ts` builds the item list on
+the server from the same content the pages render, so a new project or tag
+appears in it with nothing else to update.
+
+`KeybindFooter` carries no links, so the two things `SiteFooter` used to hold
+moved: contact links live in the `~/contact` pane on `/about`, and the feed
+lives in the waybar at `md`+ and in the palette everywhere.
 
 **Layout is CSS; only behaviour is gated by `useMediaQuery`.** The arrangement
 has to be right on the first paint, and a hook cannot know the viewport during a
@@ -363,7 +378,15 @@ claiming a change works.
 - ✅ Phase 5 — `/mobile-audit` and fixes. Measured on an emulated mid-range
   Android (412×915, 4× CPU, Slow 4G): LCP 741ms, CLS 0.00, 0 long tasks, 139KB
   JS gzipped, no third-party requests. Re-run it after any layout change.
-- ⬜ Phase 6 — CommandPalette, keybind footer, polish
+- ✅ Phase 6 — CommandPalette, keybind footer, polish
+
+The polish pass caught a bug that predated the redesign: **every
+`text-[var(--text-*)]` class was compiling to `color`, not `font-size`.**
+Tailwind cannot tell whether a bare `var()` is a length or a colour and assumes
+colour, so the declaration was invalid and every heading rendered at inherited
+body size — the homepage `h1` measured 15px where the token says 36px. The fix
+is the explicit hint, `text-[length:var(--text-3xl)]`. Colour tokens
+(`--text-muted`, `--text-2`, …) were correct as they were and were left alone.
 
 ---
 
