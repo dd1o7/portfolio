@@ -197,7 +197,7 @@ for visual reasons.
 |---|---|
 | `MasterStack` | The tiling container. **Every route goes through it**, stack or not — it is also what makes the master pane fill the viewport and scroll internally. |
 | `Waybar` | Top bar. Server component, so `hasResume()` keeps its build-time check. |
-| `WorkspacePills` | The nav. Below `sm` inactive workspaces show only their number. |
+| `WorkspacePills` | The nav. Labels are always visible; below `sm` the *numbers* give way to make room for them. |
 | `workspaces.ts` | Plain data: the workspace order, `isActive`, `activeIndex`. The single source of truth for "which way is forward". |
 | `Pane` / `PaneHeader` | The window and its title bar. `label`, `counter`, `focused`. |
 | `FilterPane` | Listing pane. Client-only so the header counter tracks the tag filter. |
@@ -230,13 +230,22 @@ window rather than an empty one.
 | `640–1024px` | Two panes maximum, stacked vertically. No drag-to-resize. |
 | `≥ 1024px` | Full tiling: master + stack side by side, draggable split divider, drag-to-reorder, keyboard shortcuts, keybind footer. |
 
-At `lg` the site wrapper is exactly one viewport tall and does not scroll — panes
-scroll inside themselves instead. That height is set on a wrapper in
-`(site)/layout.tsx`, never on `<body>`, because `/admin` shares that element and
-needs ordinary scrolling.
+At `lg` the site is exactly one viewport tall and does not scroll — panes scroll
+inside themselves instead. `<html>` and `<body>` are what own the page
+scrollbar, so the height has to go there; a height on an inner wrapper does not
+stop them growing. The rule in `globals.css` is scoped with `:has(> .wm-shell)`
+so `/admin`, which shares `<body>`, keeps ordinary scrolling. **Renaming the
+`wm-shell` class on the wrapper in `(site)/layout.tsx` breaks this silently.**
 
-The waybar is **48px** below `md`, not the 44px in the original brief: a 44px
-workspace pill has to fit inside it, and the touch-target rule wins.
+Two deviations from the original brief, both forced by rules that outrank it:
+
+- The waybar is **48px** below `md`, not 44px — a 44px workspace pill has to fit
+  inside it, and the touch-target rule wins.
+- Workspace pills **keep their labels** at every width and drop their numbers
+  below `sm` instead. Numbered-only pills fit the brief's "never wraps, never
+  scrolls" rule but are useless to a visitor who does not already know what
+  workspace 3 holds. The numbers pair with keyboard shortcuts, which a phone
+  does not have.
 
 ## Design tokens
 

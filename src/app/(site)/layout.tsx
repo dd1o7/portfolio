@@ -16,7 +16,9 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <AmbientBackground />
-      <div className="flex min-h-full flex-1 flex-col lg:h-dvh lg:overflow-hidden">
+      {/* `wm-shell` is what the rule in globals.css keys off to stop <html> and
+          <body> scrolling at lg. Do not rename it without updating that rule. */}
+      <div className="wm-shell flex min-h-full flex-1 flex-col lg:h-full lg:min-h-0 lg:overflow-hidden">
         <Waybar />
         <WorkspaceSwiper className="flex min-h-0 flex-1 flex-col gap-3 p-3">
           {children}

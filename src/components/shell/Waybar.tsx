@@ -28,16 +28,17 @@ export function Waybar() {
         "bg-[var(--bg)] md:bg-[var(--surface-blur)] md:backdrop-blur-md",
       ].join(" ")}
     >
-      {/* Below sm the bar is workspaces only — the brand and the clock are the
-          first things to go, because the pills are what you navigate with. */}
+      {/* Below sm the bar is workspaces only. The brand and the clock go first
+          because the pills are what you navigate with, and their labels need
+          the room. */}
       <Link
         href="/"
-        className="mono max-sm:hidden shrink-0 text-[var(--accent)] transition-colors hover:text-[var(--accent-bright)]"
+        className="mono hidden shrink-0 text-[var(--accent)] transition-colors hover:text-[var(--accent-bright)] sm:inline"
       >
         {siteConfig.githubHandle}
       </Link>
 
-      <span aria-hidden="true" className="max-sm:hidden h-3.5 w-px shrink-0 bg-[var(--border)]" />
+      <span aria-hidden="true" className="hidden h-3.5 w-px shrink-0 bg-[var(--border)] sm:block" />
 
       <WorkspacePills />
 

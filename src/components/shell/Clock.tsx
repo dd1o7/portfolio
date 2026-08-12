@@ -26,7 +26,7 @@ export function Clock() {
   }, []);
 
   return (
-    <span className="mono max-sm:hidden w-[5ch] shrink-0 text-right text-[var(--faint)] tabular-nums">
+    <span className="mono hidden w-[5ch] shrink-0 text-right text-[var(--faint)] tabular-nums sm:inline-block">
       {time}
     </span>
   );

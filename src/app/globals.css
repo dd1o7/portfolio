@@ -228,6 +228,21 @@ a {
   border-top: 1px solid var(--border);
 }
 
+/* At lg the public site is exactly one viewport tall and does not scroll —
+   the panes scroll inside themselves instead.
+
+   This has to be set on <html> and <body>, because those are the elements that
+   own the page scrollbar; a height on an inner wrapper does not stop them
+   growing. `:has()` scopes it to pages that render the shell, so /admin — which
+   shares <body> — keeps ordinary scrolling. */
+@media (width >= 64rem) {
+  html:has(> body > .wm-shell),
+  body:has(> .wm-shell) {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
 /* Ambient background: two radial glows and the grid, in one fixed layer.
    Painted once, behind everything. Never per-pane backgrounds. */
 .ambient {
