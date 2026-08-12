@@ -21,7 +21,9 @@ export function Pane({ label, counter, focused = false, children }: PaneProps) {
     <section
       aria-label={label}
       className={[
-        "flex flex-col overflow-hidden rounded-[var(--radius-pane)] border",
+        // `pane` carries the open animation and the focus-glow transition; see
+        // the MOTION section of globals.css.
+        "pane flex flex-col overflow-hidden rounded-[var(--radius-pane)] border",
         // Solid fill below md. The blurred fill is the single biggest mobile
         // performance risk in this design, so it starts at the md breakpoint.
         "bg-[var(--surface)] md:bg-[var(--surface-blur)] md:backdrop-blur-md",

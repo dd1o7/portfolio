@@ -62,7 +62,14 @@
   --split: 62%;
 
   /* --- Motion ----------------------------------------------------------- */
-  --transition: 140ms ease;
+  /* Ported from Hyprland's animation config. Every animation on this site uses
+     one of these four curves — never invent a one-off bezier in a component. */
+  --ease-overshot: cubic-bezier(0.05, 0.9, 0.1, 1.05); /* windowsIn  */
+  --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1); /* fade       */
+  --ease-wind: cubic-bezier(0.05, 0.9, 0.1, 1.1); /* workspaces */
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1); /* windowsOut */
+
+  --transition: 140ms var(--ease-smooth);
 
   color-scheme: dark;
 }
@@ -121,6 +128,11 @@
 
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
+
+  /* Retunes every `transition-*` utility at once, so a hover on a pill, a card
+     and a tag chip all move on the same curve without repeating it per class. */
+  --default-transition-duration: 140ms;
+  --default-transition-timing-function: var(--ease-smooth);
 }
 
 /* ============================================================================
@@ -132,16 +144,23 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Every animation collapses to a 100ms opacity fade. Not optional, and not an
+   afterthought — the JS side skips the view transition entirely, see
+   `useWorkspaceNavigation`. */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: 100ms !important;
+    animation-timing-function: linear !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 100ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Panes still announce themselves, but without the scale. */
+  .pane {
+    animation-name: fade-in !important;
   }
 }
 
@@ -260,6 +279,90 @@ a {
     100% 100%,
     44px 44px,
     44px 44px;
+}
+
+/* ============================================================================
+   MOTION
+
+   The whole vocabulary lives here. Only `transform` and `opacity` are ever
+   animated, and nothing runs longer than 300ms. Exits are always faster than
+   entries — a slow exit is the commonest reason an interface feels sluggish.
+   ========================================================================= */
+
+@keyframes pane-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* A window opening. Plays on load and on every navigation that brings new
+   panes in, which is exactly when a window manager would open one. */
+.pane {
+  animation: pane-in 220ms var(--ease-overshot) both;
+  transition:
+    border-color 140ms var(--ease-smooth),
+    box-shadow 140ms var(--ease-smooth);
+}
+
+/* --- Workspace switching -------------------------------------------------
+
+   The slide is driven by the View Transitions API, not by swapping component
+   state: `/`, `/projects` and the rest stay real routes. `useWorkspaceNavigation`
+   sets `data-ws` on <html> to say which way the route order moved, and these
+   rules read it. Naming <main> keeps the waybar and footer in the default root
+   cross-fade, so the active pill changes softly while the panes slide.
+   ------------------------------------------------------------------------- */
+
+main {
+  view-transition-name: workspace;
+}
+
+@keyframes ws-enter-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes ws-enter-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes ws-exit-left {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes ws-exit-right {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+html[data-ws="forward"]::view-transition-new(workspace) {
+  animation: ws-enter-right 300ms var(--ease-wind) both;
+}
+html[data-ws="forward"]::view-transition-old(workspace) {
+  animation: ws-exit-left 300ms var(--ease-wind) both;
+}
+html[data-ws="back"]::view-transition-new(workspace) {
+  animation: ws-enter-left 300ms var(--ease-wind) both;
+}
+html[data-ws="back"]::view-transition-old(workspace) {
+  animation: ws-exit-right 300ms var(--ease-wind) both;
 }
 
 /* ============================================================================

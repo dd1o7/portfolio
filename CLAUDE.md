@@ -222,6 +222,37 @@ A pane with nothing in it is never rendered — `GitHubActivity` owns its own
 `Pane` for exactly this reason, so that an unavailable GitHub API produces no
 window rather than an empty one.
 
+## Motion
+
+The whole vocabulary lives in the MOTION section of `globals.css` — four
+Hyprland beziers (`--ease-overshot`, `--ease-smooth`, `--ease-wind`,
+`--ease-exit`), the keyframes, and the view-transition rules. A new motion goes
+there first; never invent a one-off curve in a component. See the `hypr-motion`
+skill for the full table.
+
+Hover and focus timing is set once through Tailwind's
+`--default-transition-duration` / `--default-transition-timing-function`, so
+every `transition-*` utility already moves on `--ease-smooth` at 140ms.
+
+**The workspace slide drives the View Transitions API by hand.** React 19.2
+stable does not export `ViewTransition` and Next 16.3 never calls
+`startViewTransition`, so the framework offers nothing here and the alternative
+was putting a live site on canary builds. `useWorkspaceNavigation` sets
+`data-ws="forward" | "back"` on `<html>` from the index comparison, starts the
+transition, and resolves it from an effect watching `usePathname()` — with a
+400ms timeout, so a slow route can never leave the screen frozen on a stale
+frame. Under `prefers-reduced-motion` it skips the transition entirely and just
+pushes.
+
+Two items from the motion table are deliberately not built:
+
+- **Finger-following swipe.** The mobile slide fires on release, not during the
+  drag. Tracking the finger means both workspaces rendered at once, which is the
+  component-state swapping the non-negotiables forbid.
+- **Stack reorder.** Drag-to-reorder was never built, so its `layout` animation
+  has nothing to animate. It would need a drag library or ~150 lines of custom
+  drag for two or three panes.
+
 ## Layout at each breakpoint
 
 | Width | Layout |
@@ -309,7 +340,8 @@ claiming a change works.
 - ✅ Phase 1 — tokens, fonts, Waybar, WorkspacePills, Pane, PaneHeader, ambient layer
 - ✅ Phase 2 — existing routes wired through the shell
 - ✅ Phase 3 — the three responsive layout modes
-- ⬜ Phase 4 — motion (see the `hypr-motion` skill)
+- ✅ Phase 4 — motion (see the `hypr-motion` skill, and "Motion" above for the
+  two items deliberately left out)
 - ⬜ Phase 5 — `/mobile-audit` and fixes
 - ⬜ Phase 6 — CommandPalette, keybind footer, polish
 

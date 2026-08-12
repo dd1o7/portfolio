@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { DESKTOP, useMediaQuery } from "./useMediaQuery";
 import { activeIndex, workspaces } from "./workspaces";
+import { useWorkspaceNavigation } from "./useWorkspaceNavigation";
 
 /** How far a drag must travel before it counts as a swipe. */
 const DISTANCE = 56;
@@ -37,9 +38,9 @@ export function WorkspaceSwiper({
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLElement>(null);
-  const router = useRouter();
   const pathname = usePathname();
   const isDesktop = useMediaQuery(DESKTOP);
+  const go = useWorkspaceNavigation();
 
   useEffect(() => {
     if (isDesktop) return;
@@ -61,7 +62,8 @@ export function WorkspaceSwiper({
       if (to < 0 || to >= workspaces.length) return;
 
       lastNavigation = now;
-      router.push(workspaces[to].href);
+      // Same path as a pill click, so a swipe and a tap slide identically.
+      go(workspaces[to].href);
     };
 
     /** One in-flight gesture. Touch and pointer each get their own. */
@@ -125,7 +127,7 @@ export function WorkspaceSwiper({
       el.removeEventListener("pointerup", onPointerUp);
       el.removeEventListener("pointercancel", pointer.abort);
     };
-  }, [isDesktop, pathname, router]);
+  }, [isDesktop, pathname, go]);
 
   return (
     <main ref={ref} className={className}>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isActive, workspaces } from "./workspaces";
+import { useWorkspaceNavigation } from "./useWorkspaceNavigation";
 
 /**
  * The nav.
@@ -17,6 +18,19 @@ import { isActive, workspaces } from "./workspaces";
  */
 export function WorkspacePills() {
   const pathname = usePathname();
+  const go = useWorkspaceNavigation();
+
+  /**
+   * Take over only the plain left click. Modified clicks and middle clicks stay
+   * the browser's, so "open in new tab" keeps working — these are real links.
+   */
+  function handleClick(event: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    event.preventDefault();
+    go(href);
+  }
 
   return (
     <nav
@@ -32,6 +46,7 @@ export function WorkspacePills() {
           <Link
             key={workspace.href}
             href={workspace.href}
+            onClick={(event) => handleClick(event, workspace.href)}
             aria-label={`${index + 1} ${workspace.label}`}
             aria-current={active ? "page" : undefined}
             className={[
