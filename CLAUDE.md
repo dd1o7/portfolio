@@ -47,6 +47,7 @@ content/            all site content (Markdown + YAML frontmatter)
   projects/*.md
   research/*.md
   now/*.md          one file per weekly update, named YYYY-MM-DD.md
+  site/home.md      the homepage introduction
   site/about.md
 src/
   site.config.ts    all personal data — name, handle, links, nav
@@ -217,6 +218,7 @@ for visual reasons.
 | `KeyboardShortcuts` | Renders nothing. `1`–`5` and `⌘K`, desktop only. |
 | `KeybindFooter` | Keybinds at `lg`, a gesture hint below. Replaced `SiteFooter`. |
 | `ActiveTitle` | The focused workspace, named in the waybar. `md`+ only. |
+| `ResumePane` | `~/cv` on /about. Inline PDF preview at `lg`, a link below it. |
 | `useMediaQuery` | The one responsive hook. `DESKTOP` (1024px) and `TABLET` (640px). |
 | `Clock`, `AmbientBackground` | Waybar clock; the one fixed glow-and-grid layer. |
 

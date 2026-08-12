@@ -2,7 +2,7 @@ import Link from "next/link";
 import { MasterStack } from "@/components/shell/MasterStack";
 import { Pane } from "@/components/shell/Pane";
 import { EntryList, type Entry } from "@/components/EntryList";
-import { getCurrentNow, getFeaturedProjects, getProjects, getResearch } from "@/lib/content";
+import { getCurrentNow, getFeaturedProjects, getHome, getProjects, getResearch } from "@/lib/content";
 import { relativeDate } from "@/lib/utils";
 import { siteConfig } from "@/site.config";
 
@@ -14,11 +14,12 @@ import { siteConfig } from "@/site.config";
  * all — an empty window is worse than a missing one.
  */
 export default async function HomePage() {
-  const [now, featured, allProjects, research] = await Promise.all([
+  const [now, featured, allProjects, research, home] = await Promise.all([
     getCurrentNow(),
     getFeaturedProjects(3),
     getProjects(),
     getResearch(),
+    getHome(),
   ]);
 
   const projectEntries: Entry[] = featured.map((p) => ({
@@ -87,12 +88,18 @@ export default async function HomePage() {
           <div className="max-w-[var(--container)]">
             <h1 className="text-[length:var(--text-3xl)] font-medium tracking-tight">
               {siteConfig.name}
-              <span aria-hidden="true" className="prompt-cursor" />
             </h1>
+            {/* The tagline stays above the introduction and carries the
+                positioning: it is the one line that says what the work is. */}
             <p className="mono mt-2 text-[var(--muted)]">{siteConfig.tagline}</p>
-            <p className="mt-6 text-[length:var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
-              {siteConfig.intro}
-            </p>
+
+            {home ? (
+              <div className="prose mt-6" dangerouslySetInnerHTML={{ __html: home.html }} />
+            ) : (
+              <p className="mt-6 text-[length:var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
+                {siteConfig.intro}
+              </p>
+            )}
           </div>
         </Pane>
       }

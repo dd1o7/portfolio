@@ -231,15 +231,31 @@ export async function getCurrentNow(): Promise<NowEntry | null> {
   return entries[0] ?? null;
 }
 
-export async function getAbout(): Promise<About | null> {
-  const file = path.join(CONTENT_DIR, "site", "about.md");
+/**
+ * A standalone page under `content/site/`.
+ *
+ * These are the pages that are prose rather than a collection — the homepage
+ * introduction and the about page. Missing is not an error: the route falls
+ * back to whatever it showed before the file existed.
+ */
+async function getSiteDoc(name: string): Promise<About | null> {
+  const file = path.join(CONTENT_DIR, "site", `${name}.md`);
   if (!fs.existsSync(file)) return null;
   const { data, content } = matter(fs.readFileSync(file, "utf8"));
   const parsed = aboutSchema.safeParse(data);
   if (!parsed.success) {
-    throw new Error(formatValidationError("site/about.md", parsed.error));
+    throw new Error(formatValidationError(`site/${name}.md`, parsed.error));
   }
   return { ...parsed.data, html: await renderMarkdown(content) };
+}
+
+export async function getAbout(): Promise<About | null> {
+  return getSiteDoc("about");
+}
+
+/** The homepage introduction. Falls back to `siteConfig.intro` when absent. */
+export async function getHome(): Promise<About | null> {
+  return getSiteDoc("home");
 }
 
 /** Every tag used anywhere, with how many items use it. Most used first. */
