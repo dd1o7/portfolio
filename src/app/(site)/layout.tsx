@@ -1,21 +1,28 @@
 import { Waybar } from "@/components/shell/Waybar";
 import { AmbientBackground } from "@/components/shell/AmbientBackground";
+import { WorkspaceSwiper } from "@/components/shell/WorkspaceSwiper";
 import { SiteFooter } from "@/components/SiteFooter";
 
 /**
  * Chrome for the public site. The admin does not use this.
  *
- * Phase 2 stacks a route's panes vertically in DOM order. That order is the one
- * Phase 3 tiles into master + stack on desktop, so the first pane a page renders
- * is its master and the rest are its stack.
+ * The wrapper is what makes desktop feel like a window manager: at `lg` it is
+ * exactly one viewport tall and never scrolls, so the panes inside scroll
+ * instead. Below `lg` it grows with its content and the page scrolls normally.
+ * The height is set here rather than on `<body>` because the admin shares that
+ * element and needs ordinary scrolling.
  */
 export default function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <AmbientBackground />
-      <Waybar />
-      <main className="flex flex-1 flex-col gap-3 p-3">{children}</main>
-      <SiteFooter />
+      <div className="flex min-h-full flex-1 flex-col lg:h-dvh lg:overflow-hidden">
+        <Waybar />
+        <WorkspaceSwiper className="flex min-h-0 flex-1 flex-col gap-3 p-3">
+          {children}
+        </WorkspaceSwiper>
+        <SiteFooter />
+      </div>
     </>
   );
 }

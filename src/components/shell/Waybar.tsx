@@ -21,19 +21,23 @@ export function Waybar() {
     <header
       className={[
         "sticky top-0 z-50 flex shrink-0 items-center gap-3 border-b border-[var(--border)] px-3",
-        "h-11 md:h-[34px]",
+        // 48px below md so a 44px workspace pill fits inside it with a margin;
+        // the touch-target rule is what sets this floor, not the bar itself.
+        "h-12 md:h-[34px]",
         // Solid below md — no backdrop-filter on mobile.
         "bg-[var(--bg)] md:bg-[var(--surface-blur)] md:backdrop-blur-md",
       ].join(" ")}
     >
+      {/* Below sm the bar is workspaces only — the brand and the clock are the
+          first things to go, because the pills are what you navigate with. */}
       <Link
         href="/"
-        className="mono shrink-0 text-[var(--accent)] transition-colors hover:text-[var(--accent-bright)]"
+        className="mono max-sm:hidden shrink-0 text-[var(--accent)] transition-colors hover:text-[var(--accent-bright)]"
       >
         {siteConfig.githubHandle}
       </Link>
 
-      <span aria-hidden="true" className="h-3.5 w-px shrink-0 bg-[var(--border)]" />
+      <span aria-hidden="true" className="max-sm:hidden h-3.5 w-px shrink-0 bg-[var(--border)]" />
 
       <WorkspacePills />
 

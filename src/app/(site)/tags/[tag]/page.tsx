@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MasterStack } from "@/components/shell/MasterStack";
 import { Pane } from "@/components/shell/Pane";
 import { EntryList, type Entry } from "@/components/EntryList";
 import { getAllTags, getItemsByTag, slugifyTag } from "@/lib/content";
@@ -34,14 +35,20 @@ export default async function TagPage({ params }: PageProps<"/tags/[tag]">) {
   }));
 
   return (
-    <Pane label={`~/tags/${slugifyTag(tag)}`} counter={`${items.length}`} focused>
-      <Link href="/projects" className="mono link-accent">
-        ← all work
-      </Link>
+    <MasterStack
+      master={
+        <Pane label={`~/tags/${slugifyTag(tag)}`} counter={`${items.length}`} focused>
+          <Link href="/projects" className="mono link-accent">
+            ← all work
+          </Link>
 
-      <h1 className="mt-5 mb-6 text-[var(--text-2xl)] font-medium tracking-tight">{displayTag}</h1>
+          <h1 className="mt-5 mb-6 text-[var(--text-2xl)] font-medium tracking-tight">
+            {displayTag}
+          </h1>
 
-      <EntryList entries={entries} />
-    </Pane>
+          <EntryList entries={entries} />
+        </Pane>
+      }
+    />
   );
 }

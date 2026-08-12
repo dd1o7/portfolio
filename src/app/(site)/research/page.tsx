@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FilterPane } from "@/components/shell/FilterPane";
+import { MasterStack } from "@/components/shell/MasterStack";
 import type { Entry } from "@/components/EntryList";
 import { getResearch } from "@/lib/content";
 
@@ -20,5 +21,5 @@ export default async function ResearchPage() {
     tags: [...item.tags],
   }));
 
-  return <FilterPane label="~/research" entries={entries} />;
+  return <MasterStack master={<FilterPane label="~/research" entries={entries} />} />;
 }

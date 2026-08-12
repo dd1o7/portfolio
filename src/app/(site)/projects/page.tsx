@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FilterPane } from "@/components/shell/FilterPane";
+import { MasterStack } from "@/components/shell/MasterStack";
 import type { Entry } from "@/components/EntryList";
 import { getProjects } from "@/lib/content";
 
@@ -21,5 +22,5 @@ export default async function ProjectsPage() {
     badge: project.status === "active" ? "active" : undefined,
   }));
 
-  return <FilterPane label="~/projects" entries={entries} />;
+  return <MasterStack master={<FilterPane label="~/projects" entries={entries} />} />;
 }

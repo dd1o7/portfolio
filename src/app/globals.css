@@ -57,6 +57,10 @@
   --radius-sm: 4px;
   --radius-pane: 8px; /* panes only — the shell's one radius */
 
+  /* Width of the master column at `lg` and up. SplitDivider rewrites this on
+     <html> while you drag, so it survives navigation between workspaces. */
+  --split: 62%;
+
   /* --- Motion ----------------------------------------------------------- */
   --transition: 140ms ease;
 

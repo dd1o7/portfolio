@@ -195,12 +195,23 @@ for visual reasons.
 
 | Component | Role |
 |---|---|
+| `MasterStack` | The tiling container. **Every route goes through it**, stack or not — it is also what makes the master pane fill the viewport and scroll internally. |
 | `Waybar` | Top bar. Server component, so `hasResume()` keeps its build-time check. |
-| `WorkspacePills` | The nav. Exports `workspaces` — the single source of truth for workspace order. |
+| `WorkspacePills` | The nav. Below `sm` inactive workspaces show only their number. |
+| `workspaces.ts` | Plain data: the workspace order, `isActive`, `activeIndex`. The single source of truth for "which way is forward". |
 | `Pane` / `PaneHeader` | The window and its title bar. `label`, `counter`, `focused`. |
 | `FilterPane` | Listing pane. Client-only so the header counter tracks the tag filter. |
 | `MetaPane` | The stack pane beside an article: frontmatter that is not the body. |
+| `SplitDivider` | Drags the master/stack split. Writes `--split` on `<html>` inside `requestAnimationFrame`. |
+| `WorkspaceSwiper` | Renders `<main>`; adds swipe-between-workspaces below `lg`. |
+| `useMediaQuery` | The one responsive hook. `DESKTOP` (1024px) and `TABLET` (640px). |
 | `Clock`, `AmbientBackground` | Waybar clock; the one fixed glow-and-grid layer. |
+
+**Layout is CSS; only behaviour is gated by `useMediaQuery`.** The arrangement
+has to be right on the first paint, and a hook cannot know the viewport during a
+server render. So the columns, the stacking and the divider's slot are all CSS,
+and the hook decides only whether to *attach* drag and swipe listeners — which
+is the part that actually costs anything on a phone.
 
 Pane labels are lowercase, filesystem-looking, JetBrains Mono. Routes map to
 `~/home`, `~/projects`, `~/research`, `~/now`, `~/about`, `~/tags/<tag>`,
@@ -218,6 +229,14 @@ window rather than an empty one.
 | `< 640px` | One full-width pane per screen. Workspaces switch by horizontal swipe or by tapping a pill. Stack panes scroll vertically below the master pane. No drag-to-resize, no drag-to-reorder. |
 | `640–1024px` | Two panes maximum, stacked vertically. No drag-to-resize. |
 | `≥ 1024px` | Full tiling: master + stack side by side, draggable split divider, drag-to-reorder, keyboard shortcuts, keybind footer. |
+
+At `lg` the site wrapper is exactly one viewport tall and does not scroll — panes
+scroll inside themselves instead. That height is set on a wrapper in
+`(site)/layout.tsx`, never on `<body>`, because `/admin` shares that element and
+needs ordinary scrolling.
+
+The waybar is **48px** below `md`, not the 44px in the original brief: a 44px
+workspace pill has to fit inside it, and the touch-target rule wins.
 
 ## Design tokens
 
@@ -237,6 +256,8 @@ hex.
 --accent-bright: #7cdcc3   /* field labels, active status text */
 --accent-dim:    #429e88   /* keybind keys, low-emphasis accent */
 --link:          #b0ecdb
+
+--split:         62%       /* master column width at lg; SplitDivider rewrites it */
 
 --text:          #e6efec   /* headings, titles */
 --text-2:        #a8bcb7   /* body prose */
@@ -278,7 +299,7 @@ claiming a change works.
 
 - ✅ Phase 1 — tokens, fonts, Waybar, WorkspacePills, Pane, PaneHeader, ambient layer
 - ✅ Phase 2 — existing routes wired through the shell
-- ⬜ Phase 3 — the three responsive layout modes
+- ✅ Phase 3 — the three responsive layout modes
 - ⬜ Phase 4 — motion (see the `hypr-motion` skill)
 - ⬜ Phase 5 — `/mobile-audit` and fixes
 - ⬜ Phase 6 — CommandPalette, keybind footer, polish

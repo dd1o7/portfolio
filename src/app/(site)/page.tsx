@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MasterStack } from "@/components/shell/MasterStack";
 import { Pane } from "@/components/shell/Pane";
 import { EntryList, type Entry } from "@/components/EntryList";
 import { getCurrentNow, getFeaturedProjects, getProjects, getResearch } from "@/lib/content";
@@ -8,10 +9,9 @@ import { siteConfig } from "@/site.config";
 /**
  * The home workspace.
  *
- * One master pane and three stack panes, in the order Phase 3 will tile them:
- * the intro is the master, `~/now`, `~/projects` and `~/research` are the stack.
- * A stack pane with nothing in it is not rendered at all — an empty window is
- * worse than a missing one.
+ * The intro is the master pane; `~/now`, `~/projects` and `~/research` tile
+ * down the stack beside it. A stack pane with nothing in it is not rendered at
+ * all — an empty window is worse than a missing one.
  */
 export default async function HomePage() {
   const [now, featured, allProjects, research] = await Promise.all([
@@ -40,42 +40,63 @@ export default async function HomePage() {
     tags: [...r.tags],
   }));
 
+  const stack: React.ReactNode[] = [];
+
+  if (now) {
+    stack.push(
+      <Pane key="now" label="~/now" counter={relativeDate(now.date)}>
+        <div
+          className="prose max-w-[var(--container)]"
+          dangerouslySetInnerHTML={{ __html: now.html }}
+        />
+        <MoreLink href="/now">all updates</MoreLink>
+      </Pane>,
+    );
+  }
+
+  if (projectEntries.length > 0) {
+    stack.push(
+      <Pane
+        key="projects"
+        label="~/projects"
+        counter={`${projectEntries.length} / ${allProjects.length}`}
+      >
+        <EntryList entries={projectEntries} />
+        <MoreLink href="/projects">all projects</MoreLink>
+      </Pane>,
+    );
+  }
+
+  if (researchEntries.length > 0) {
+    stack.push(
+      <Pane
+        key="research"
+        label="~/research"
+        counter={`${researchEntries.length} / ${research.length}`}
+      >
+        <EntryList entries={researchEntries} />
+        <MoreLink href="/research">all research</MoreLink>
+      </Pane>,
+    );
+  }
+
   return (
-    <>
-      <Pane label="~/home" focused>
-        <div className="max-w-[var(--container)]">
-          <h1 className="text-[var(--text-3xl)] font-medium tracking-tight">{siteConfig.name}</h1>
-          <p className="mono mt-2 text-[var(--muted)]">{siteConfig.tagline}</p>
-          <p className="mt-6 text-[var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
-            {siteConfig.intro}
-          </p>
-        </div>
-      </Pane>
-
-      {now && (
-        <Pane label="~/now" counter={relativeDate(now.date)}>
-          <div
-            className="prose max-w-[var(--container)]"
-            dangerouslySetInnerHTML={{ __html: now.html }}
-          />
-          <MoreLink href="/now">all updates</MoreLink>
+    <MasterStack
+      master={
+        <Pane label="~/home" focused>
+          <div className="max-w-[var(--container)]">
+            <h1 className="text-[var(--text-3xl)] font-medium tracking-tight">
+              {siteConfig.name}
+            </h1>
+            <p className="mono mt-2 text-[var(--muted)]">{siteConfig.tagline}</p>
+            <p className="mt-6 text-[var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
+              {siteConfig.intro}
+            </p>
+          </div>
         </Pane>
-      )}
-
-      {projectEntries.length > 0 && (
-        <Pane label="~/projects" counter={`${projectEntries.length} / ${allProjects.length}`}>
-          <EntryList entries={projectEntries} />
-          <MoreLink href="/projects">all projects</MoreLink>
-        </Pane>
-      )}
-
-      {researchEntries.length > 0 && (
-        <Pane label="~/research" counter={`${researchEntries.length} / ${research.length}`}>
-          <EntryList entries={researchEntries} />
-          <MoreLink href="/research">all research</MoreLink>
-        </Pane>
-      )}
-    </>
+      }
+      stack={stack}
+    />
   );
 }
 

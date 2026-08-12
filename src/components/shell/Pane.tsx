@@ -31,7 +31,9 @@ export function Pane({ label, counter, focused = false, children }: PaneProps) {
       ].join(" ")}
     >
       <PaneHeader label={label} counter={counter} />
-      <div className="min-h-0 flex-1 px-5 py-5 sm:px-7 sm:py-6">{children}</div>
+      {/* On desktop a pane scrolls inside itself and the page does not scroll at
+          all. On mobile the page scrolls normally and panes size to content. */}
+      <div className="min-h-0 flex-1 px-5 py-5 sm:px-7 sm:py-6 lg:overflow-y-auto">{children}</div>
     </section>
   );
 }
