@@ -105,6 +105,19 @@ schema first.
 - **Reuse `EntryList`.** The homepage, both listing pages and tag pages all
   render through it. Do not write another list layout.
 - **`lib/content.ts` is the only place that touches the filesystem for content.**
+- **Markdown is GitHub Flavoured plus a slice of Obsidian.** Tables, task
+  lists, footnotes and strikethrough come from `remark-gfm`. On top of those:
+  callouts (`> [!note]`, via `remark-github-blockquote-alert`, so they render
+  the same here as in Obsidian and on GitHub), `==highlight==`, and
+  `[[wikilinks]]`.
+
+  **Wikilinks resolve from filenames only, never from parsed entries.** That is
+  not an optimisation — `renderMarkdown` runs inside `readOne`, so calling
+  `getProjects()` from a plugin would recurse forever. A bare `[[slug]]` is
+  searched in projects then research; `[[research/slug]]` is explicit;
+  `[[slug|label]]` sets the text. An unresolved target renders as plain text
+  rather than a dead link.
+
 - **Maths and code render at build time.** KaTeX (`$…$` inline, `$$…$$` display)
   via `remark-math` + `rehype-katex`, and Shiki highlighting, are already wired
   into the Markdown pipeline. Never ship `katex.min.js` or `auto-render.js` to

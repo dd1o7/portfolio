@@ -2,6 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cx } from "@/lib/utils";
+import {
+  continueBlock,
+  makeLink,
+  shiftIndent,
+  toggleWrap,
+  wordCount,
+  type Edit,
+} from "./editor-commands";
 
 /** Formats that must not go through the canvas: one is vector, one animates. */
 const PASS_THROUGH = new Set(["svg", "gif"]);
@@ -126,6 +134,76 @@ export function MarkdownEditor({
     }
   }
 
+  /**
+   * Push an edit back into the textarea.
+   *
+   * `execCommand` is deprecated but is still the only way to change a
+   * textarea's value while keeping the browser's native undo stack — setting
+   * `value` directly makes ⌘Z wipe the whole field. The manual fallback runs
+   * where it is unsupported.
+   */
+  function apply(edit: Edit) {
+    const el = textarea.current;
+    if (!el) return;
+
+    el.focus();
+    el.setSelectionRange(0, el.value.length);
+    const inserted = document.execCommand?.("insertText", false, edit.text);
+    if (!inserted) {
+      el.value = edit.text;
+      onChange(edit.text);
+    }
+    el.setSelectionRange(edit.start, edit.end);
+    onChange(edit.text);
+  }
+
+  function onKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    const el = event.currentTarget;
+    const { value: text, selectionStart: start, selectionEnd: end } = el;
+    const mod = event.metaKey || event.ctrlKey;
+
+    if (mod && !event.altKey) {
+      const key = event.key.toLowerCase();
+      const wrap: Record<string, [string, string?]> = {
+        b: ["**"],
+        i: ["*"],
+        e: ["`"],
+        h: ["=="],
+      };
+      if (key in wrap) {
+        event.preventDefault();
+        const [open, close] = wrap[key];
+        return apply(toggleWrap(text, start, end, open, close ?? open));
+      }
+      if (key === "k") {
+        event.preventDefault();
+        return apply(makeLink(text, start, end));
+      }
+    }
+
+    if (event.key === "Enter" && !event.shiftKey && start === end) {
+      const edit = continueBlock(text, start);
+      if (edit) {
+        event.preventDefault();
+        return apply(edit);
+      }
+    }
+
+    if (event.key === "Tab") {
+      event.preventDefault();
+      return apply(shiftIndent(text, start, end, event.shiftKey));
+    }
+  }
+
+  /** Run a command against the current selection. */
+  function withSelection(command: (text: string, start: number, end: number) => Edit) {
+    const el = textarea.current;
+    if (!el) return;
+    apply(command(el.value, el.selectionStart, el.selectionEnd));
+  }
+
+  const words = wordCount(value);
+
   return (
     <div>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -136,6 +214,32 @@ export function MarkdownEditor({
           <TabButton active={tab === "preview"} onClick={() => setTab("preview")}>
             preview
           </TabButton>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1">
+          {tab === "write" && (
+            <>
+              <Tool title="Bold  ⌘B" onClick={() => withSelection((t, a, b) => toggleWrap(t, a, b, "**"))}>
+                B
+              </Tool>
+              <Tool title="Italic  ⌘I" onClick={() => withSelection((t, a, b) => toggleWrap(t, a, b, "*"))}>
+                I
+              </Tool>
+              <Tool title="Highlight  ⌘H" onClick={() => withSelection((t, a, b) => toggleWrap(t, a, b, "=="))}>
+                ==
+              </Tool>
+              <Tool title="Code  ⌘E" onClick={() => withSelection((t, a, b) => toggleWrap(t, a, b, "`"))}>
+                `
+              </Tool>
+              <Tool title="Link  ⌘K" onClick={() => withSelection(makeLink)}>
+                link
+              </Tool>
+              <Tool title="Callout" onClick={() => insertAtCursor("\n> [!note]\n> ")}>
+                callout
+              </Tool>
+              <span className="mono ml-1 text-[var(--text-faint)]">{words} words</span>
+            </>
+          )}
         </div>
 
         <label
@@ -169,9 +273,15 @@ export function MarkdownEditor({
           ref={textarea}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onKeyDown={onKeyDown}
           spellCheck
           rows={22}
-          placeholder={"Write in Markdown.\n\nMaths works: $E = mc^2$ inline, $$…$$ on its own line."}
+          placeholder={
+            "Write in Markdown.\n\n" +
+            "Maths: $E = mc^2$ inline, $$…$$ on its own line.\n" +
+            "Callouts: > [!note]   Highlight: ==like this==\n" +
+            "⌘B bold · ⌘I italic · ⌘K link · Tab to indent"
+          }
           className="mono w-full resize-y rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-4 leading-relaxed outline-none focus:border-[var(--accent)]"
         />
       ) : (
@@ -186,6 +296,28 @@ export function MarkdownEditor({
         </div>
       )}
     </div>
+  );
+}
+
+function Tool({
+  title,
+  onClick,
+  children,
+}: {
+  title: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      aria-label={title}
+      onClick={onClick}
+      className="mono min-w-8 rounded-[var(--radius-sm)] border border-transparent px-2 py-1 text-[var(--text-muted)] transition-colors hover:border-[var(--border)] hover:text-[var(--text)]"
+    >
+      {children}
+    </button>
   );
 }
 

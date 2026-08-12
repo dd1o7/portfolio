@@ -154,6 +154,64 @@ function remarkHighlight() {
   };
 }
 
+/**
+ * Obsidian's `[[wikilink]]`, and `[[target|label]]`.
+ *
+ * Resolution reads *filenames only* — never the parsed entries. That is not an
+ * optimisation: `renderMarkdown` runs inside `readOne`, so asking for
+ * `getProjects()` here would recurse forever. Listing the directory sidesteps
+ * that entirely.
+ *
+ * A target may be bare (`[[my-note]]`, searched in projects then research) or
+ * qualified (`[[research/my-note]]`). A target that resolves to nothing renders
+ * as plain text rather than a dead link — an unwritten note should read as
+ * ordinary prose, not as a broken promise.
+ */
+function resolveWikiTarget(target: string): string | null {
+  const [dir, slug] = target.includes("/") ? target.split("/", 2) : [null, target];
+  const search = dir ? [dir] : ["projects", "research"];
+
+  for (const candidate of search) {
+    if (!["projects", "research"].includes(candidate)) continue;
+    const exists = readDir(candidate).some((f) => f.replace(/\.mdx?$/, "") === slug);
+    if (exists) return `/${candidate}/${slug}`;
+  }
+  return null;
+}
+
+function remarkWikiLink() {
+  const pattern = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/;
+
+  return (tree: Root) => {
+    visit(tree, "text", (node: Text, index, parent) => {
+      if (!parent || index === undefined || !pattern.test(node.value)) return;
+
+      const parts: PhrasingContent[] = [];
+      let rest = node.value;
+      let match: RegExpExecArray | null;
+
+      while ((match = pattern.exec(rest)) !== null) {
+        if (match.index > 0) parts.push({ type: "text", value: rest.slice(0, match.index) });
+
+        const target = match[1].trim();
+        const label = (match[2] ?? target).trim();
+        const url = resolveWikiTarget(target);
+
+        parts.push(
+          url
+            ? { type: "link", url, children: [{ type: "text", value: label }] }
+            : { type: "text", value: label },
+        );
+        rest = rest.slice(match.index + match[0].length);
+      }
+      if (rest) parts.push({ type: "text", value: rest });
+
+      (parent.children as PhrasingContent[]).splice(index, 1, ...parts);
+      return index + parts.length;
+    });
+  };
+}
+
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
@@ -161,6 +219,7 @@ const processor = unified()
   // Obsidian / GitHub callouts: `> [!note]`, `> [!warning]`, and friends.
   .use(remarkAlert)
   .use(remarkHighlight)
+  .use(remarkWikiLink)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeSlug)
   // rehypeSlug already puts an id on every heading; this is what finally makes
