@@ -21,28 +21,33 @@
 
 :root {
   /* --- Surfaces ---------------------------------------------------------
-     The ground is near-neutral on purpose: 7/255 channel spread, against 18
-     before. When the page, the panes and the accent all share one hue nothing
-     can stand out against anything, and the whole thing reads as decoration
-     rather than as a document. Colour is now reserved for meaning. */
-  --bg: #0d0f11; /* page ground */
-  --surface: #15181c; /* pane fill — used alone on mobile */
-  --surface-blur: rgb(21 24 28 / 0.72); /* pane fill on desktop, with blur */
-  --inset: rgb(0 0 0 / 0.28); /* nested boxes: equations, cards in panes */
+     True black, and neutral by definition. When the page, the panes and the
+     accent all share one hue nothing can stand out against anything, and the
+     whole thing reads as decoration rather than as a document. Colour is
+     reserved for meaning. */
+  --bg: #000000; /* page ground — true black */
+  --surface: #0b0d0f; /* pane fill — used alone on mobile */
+  --surface-blur: rgb(11 13 15 / 0.75); /* pane fill on desktop, with blur */
+  /* On a black ground a darker inset is invisible, so nested boxes — code
+     blocks, equations, cards — lift instead of recede. */
+  --inset: rgb(255 255 255 / 0.035);
 
-  /* --- Lines ------------------------------------------------------------ */
-  --border: #30383f; /* pane border, dividers, row rules */
-  --border-focus: #3b776b; /* focused pane border — 3.42:1, meets the 3:1 UI floor */
+  /* --- Lines --------------------------------------------------------------
+     The pane fill is only 1.08:1 against the ground, so on this palette the
+     border is what defines a window, not the fill. It is load-bearing: lighten
+     it and the panes dissolve. */
+  --border: #2c333b; /* pane border, dividers, row rules */
+  --border-focus: #3b776b; /* focused pane border — 3.74:1, clears the 3:1 UI floor */
 
   /* --- Text --------------------------------------------------------------
      Every one of these clears AA on both the ground and the pane fill, except
      --faint, which is supplementary (counters, timestamps) and clears the 3:1
-     UI floor at 3.92. It was 2.33 before, which failed outright. */
-  --text: #e9ecef; /* headings, titles */
-  --text-2: #c2c8cf; /* body prose */
-  --muted: #9aa3ad; /* secondary prose, summaries */
-  --dim: #828b95; /* pane header labels, kickers */
-  --faint: #6e7781; /* counters, timestamps */
+     UI floor at 4.40. It was 2.33 on the original palette, which failed. */
+  --text: #eceff2; /* headings, titles */
+  --text-2: #c6ccd3; /* body prose */
+  --muted: #9ba4ae; /* secondary prose, summaries */
+  --dim: #848d97; /* pane header labels, kickers */
+  --faint: #707983; /* counters, timestamps */
 
   /* --- Accent ------------------------------------------------------------
      Reserved for links, focus, and the active workspace. Deliberately NOT
@@ -109,8 +114,8 @@
   --border-strong: var(--border-focus);
   --accent-hover: var(--accent-bright);
 
-  --bg-subtle: #111418;
-  --surface-hover: #1c2126;
+  --bg-subtle: #0e1114;
+  --surface-hover: #16191d;
   --accent-subtle: #16302b;
   --accent-contrast: #08110f;
   --status-active: #5fbf8a;
@@ -321,8 +326,8 @@ a {
   z-index: -1;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, rgb(48 56 63 / 0.22) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(48 56 63 / 0.22) 1px, transparent 1px);
+    linear-gradient(to right, rgb(44 51 59 / 0.20) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(44 51 59 / 0.20) 1px, transparent 1px);
   background-size:
     44px 44px,
     44px 44px;

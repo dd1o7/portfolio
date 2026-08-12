@@ -47,7 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
-        <meta name="theme-color" content="#0d0f11" />
+        <meta name="theme-color" content="#000000" />
       </head>
       <body className="flex min-h-full flex-col">
         {children}
