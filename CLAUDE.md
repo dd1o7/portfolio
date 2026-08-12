@@ -341,11 +341,25 @@ hex.
 
 Fonts, via `next/font` (self-hosted and subset — never a Google Fonts `<link>`):
 
-- **Inter** — headings and body prose. Headings sit at weight 500, never bolder.
+- **Source Serif 4** — headings and body prose. Headings sit at weight 500,
+  never bolder.
 - **JetBrains Mono** — all interface chrome: pane headers, workspace pills, tags,
   timestamps, status text, keybinds. Lowercase, letter-spaced. This font is what
   makes the design read as a window manager; use it for anything that is
   *interface* rather than *reading*.
+
+**Serif for what you read, mono for what you operate.** Sans prose beside mono
+chrome is the default developer-portfolio pairing and says nothing in
+particular; the serif says the writing is the point, which is the claim this
+site exists to make. Source Serif 4 specifically because it is drawn for screens
+and has stems sturdy enough for a true-black ground — a delicate old-style face
+goes thin here.
+
+The Tailwind theme still calls it `--font-sans`, so existing `font-sans`
+utilities keep working; the underlying variable is `--font-serif`. Italic is a
+separate file, which is why the font payload is 137KB rather than 87KB. That
+buys real italics for `<em>` and blockquotes, and measurably costs nothing —
+LCP was 727ms before the swap and 727ms after.
 
 **The ground is near-neutral on purpose.** When the page, the panes and the
 accent all share one hue, nothing can stand out against anything and the result

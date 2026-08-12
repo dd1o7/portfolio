@@ -150,7 +150,7 @@
   --color-status-active: var(--status-active);
   --color-status-draft: var(--status-draft);
 
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-serif);
   --font-mono: var(--font-jetbrains-mono);
 
   /* Retunes every `transition-*` utility at once, so a hover on a pill, a card
@@ -166,6 +166,35 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+}
+
+/* Thin scrollbars. At `lg` the panes scroll inside themselves, so these are on
+   screen constantly and a default chunky bar dominates a black interface.
+
+   Deliberately inside `@layer base`: Tailwind's utilities live in
+   `@layer utilities`, which outranks this, so `WorkspacePills` can still hide
+   its bar with `[scrollbar-width:none]`. Written unlayered — as the rest of
+   this file is — it would silently override that. */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-focus);
+  }
 }
 
 /* Every animation collapses to a 100ms opacity fade. Not optional, and not an
@@ -192,7 +221,7 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-serif), ui-serif, Georgia, serif;
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
@@ -9,7 +9,16 @@ import { siteConfig } from "@/site.config";
  * next/font downloads these at build time and serves them from our own origin —
  * there is no runtime request to Google, and no `<link>` in the document.
  */
-const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+/**
+ * Serif for what you read, mono for what you operate.
+ *
+ * Sans prose next to mono chrome is the default developer-portfolio pairing and
+ * says nothing in particular. A serif says the writing is the point — which is
+ * the whole claim this site is making — while the mono chrome keeps the window
+ * manager honest. Source Serif 4 is drawn for screens and has the sturdy stems
+ * a true-black ground needs; a delicate old-style face would go thin here.
+ */
+const serif = Source_Serif_4({ variable: "--font-serif", subsets: ["latin"] });
 const jetbrainsMono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -44,7 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${serif.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
         <meta name="theme-color" content="#000000" />
