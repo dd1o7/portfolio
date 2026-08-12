@@ -82,8 +82,13 @@
   --radius-pane: 8px; /* panes only — the shell's one radius */
 
   /* Width of the master column at `lg` and up. SplitDivider rewrites this on
-     <html> while you drag, so it survives navigation between workspaces. */
-  --split: 62%;
+     <html> while you drag, so it survives navigation between workspaces.
+
+     56%, not 62%: prose is capped at --container (46rem), so beyond about 56%
+     of a 1440px viewport the extra width in the master column is empty gutter,
+     not longer lines. At 62% that was 86px of nothing while the stack column —
+     which carries most of the content — was cramped. */
+  --split: 56%;
 
   /* --- Motion ----------------------------------------------------------- */
   /* Ported from Hyprland's animation config. Every animation on this site uses
@@ -494,9 +499,12 @@ html[data-ws="back"]::view-transition-old(workspace) {
    The name avoids Tailwind's `cursor-*` and `caret-*` namespaces. */
 .prompt-cursor {
   display: inline-block;
-  width: 0.46em;
+  /* Narrow on purpose. At 0.46em it read as a filled square and sat heavily
+     next to a serif; a real terminal block is markedly taller than it is wide,
+     and the slimmer bar reads as a caret rather than a blob. */
+  width: 0.28em;
   height: 0.72em;
-  margin-left: 0.16em;
+  margin-left: 0.18em;
   vertical-align: baseline;
   border-radius: 1.5px;
   background: var(--accent);
