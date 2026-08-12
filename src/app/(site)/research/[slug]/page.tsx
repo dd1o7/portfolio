@@ -47,7 +47,7 @@ export default async function ResearchItemPage({ params }: PageProps<"/research/
       master={
         <Pane label={`~/research/${item.slug}.md`} focused>
           <article className="max-w-[var(--container)]">
-            <Link href="/research" className="mono link-accent">
+            <Link href="/research" className="mono link-accent tap-target">
               ← research
             </Link>
 

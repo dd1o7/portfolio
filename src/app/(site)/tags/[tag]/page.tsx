@@ -38,7 +38,7 @@ export default async function TagPage({ params }: PageProps<"/tags/[tag]">) {
     <MasterStack
       master={
         <Pane label={`~/tags/${slugifyTag(tag)}`} counter={`${items.length}`} focused>
-          <Link href="/projects" className="mono link-accent">
+          <Link href="/projects" className="mono link-accent tap-target">
             ← all work
           </Link>
 

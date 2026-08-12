@@ -37,7 +37,7 @@ export function WorkspacePills() {
       aria-label="Workspaces"
       /* Scrolls sideways rather than wrapping. A second row would push the
          waybar off its fixed height. */
-      className="flex min-w-0 snap-x snap-proximity flex-nowrap items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="flex min-w-0 snap-x snap-proximity flex-nowrap items-center gap-0.5 overflow-x-auto sm:gap-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {workspaces.map((workspace, index) => {
         const active = isActive(pathname, workspace.href);
@@ -50,10 +50,13 @@ export function WorkspacePills() {
             aria-label={`${index + 1} ${workspace.label}`}
             aria-current={active ? "page" : undefined}
             className={[
-              "mono flex shrink-0 snap-start items-center justify-center gap-1.5 rounded-[var(--radius-sm)] border px-2",
+              "mono workspace-pill flex shrink-0 snap-start items-center justify-center gap-1.5",
+              "rounded-[var(--radius-sm)] border",
               // A 44px target below md; deliberately small only on desktop.
               "h-11 min-w-11 leading-none transition-colors",
-              "sm:px-2.5 md:h-[22px]",
+              // Tight enough that all five labels fit a 320px screen without
+              // the row scrolling — measured, see the Phase 5 audit.
+              "px-1 sm:px-2.5 md:h-[22px]",
               active
                 ? "border-[var(--border-focus)] bg-[var(--accent-wash)] text-[var(--accent-bright)]"
                 : "border-transparent text-[var(--dim)] hover:border-[var(--border)] hover:text-[var(--text-2)]",

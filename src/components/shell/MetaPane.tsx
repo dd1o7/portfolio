@@ -43,7 +43,7 @@ export function MetaPane({
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mono link-accent link-underline"
+                  className="mono link-accent link-underline tap-target"
                 >
                   {link.label} ↗
                 </a>

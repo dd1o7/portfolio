@@ -54,7 +54,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
       master={
         <Pane label={`~/projects/${project.slug}.md`} focused>
           <article className="max-w-[var(--container)]">
-            <Link href="/projects" className="mono link-accent">
+            <Link href="/projects" className="mono link-accent tap-target">
               ← projects
             </Link>
 

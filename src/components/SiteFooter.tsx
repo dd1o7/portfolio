@@ -14,14 +14,14 @@ export function SiteFooter() {
               href={link.href}
               target={link.href.startsWith("mailto:") ? undefined : "_blank"}
               rel="noopener noreferrer"
-              className="mono text-[var(--dim)] transition-colors hover:text-[var(--accent)]"
+              className="mono tap-target text-[var(--dim)] transition-colors hover:text-[var(--accent)]"
             >
               {link.label}
             </a>
           ))}
           <a
             href="/feed.xml"
-            className="mono text-[var(--dim)] transition-colors hover:text-[var(--accent)]"
+            className="mono tap-target text-[var(--dim)] transition-colors hover:text-[var(--accent)]"
           >
             rss
           </a>

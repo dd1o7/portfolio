@@ -65,7 +65,12 @@ export async function GitHubActivity() {
           <ul className="mono mt-3 space-y-1.5">
             {activity.map((item) => (
               <li key={item.repo} className="flex flex-wrap items-baseline justify-between gap-x-4">
-                <a href={item.url} target="_blank" rel="noopener noreferrer" className="link-accent">
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-accent tap-target"
+                >
                   {item.repo}
                 </a>
                 <span className="text-[var(--faint)]">
@@ -82,7 +87,7 @@ export async function GitHubActivity() {
         href={`https://github.com/${siteConfig.githubHandle}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="mono link-accent mt-6 inline-block"
+        className="mono link-accent tap-target mt-6"
       >
         @{siteConfig.githubHandle} ↗
       </a>

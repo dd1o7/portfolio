@@ -102,7 +102,7 @@ export default async function HomePage() {
 
 function MoreLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="mono link-accent mt-5 inline-block">
+    <Link href={href} className="mono link-accent tap-target mt-5">
       {children} →
     </Link>
   );

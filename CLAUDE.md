@@ -96,6 +96,12 @@ schema first.
 - **Design tokens only.** Colours and spacing come from CSS custom properties in
   `globals.css` (`var(--accent)`, `var(--muted)`, …). Never hard-code a hex
   value in a component — the theme is meant to be swappable from that one file.
+- **`globals.css` is unlayered, so it beats every Tailwind utility.** Tailwind
+  ships its utilities in `@layer utilities`, and an unlayered rule wins over any
+  layered one regardless of specificity. So a `text-[…]` class *cannot* override
+  the `font-size` that `.mono` sets — it loses silently, with no warning. When a
+  hand-written class and a utility fight, change the hand-written class or add a
+  scoped rule beside it (see `.workspace-pill`).
 - **Reuse `EntryList`.** The homepage, both listing pages and tag pages all
   render through it. Do not write another list layout.
 - **`lib/content.ts` is the only place that touches the filesystem for content.**
@@ -183,7 +189,10 @@ writing code.
 - **`prefers-reduced-motion` is honoured everywhere.** Every animation collapses
   to a 100ms opacity fade.
 - **Touch targets are ≥44px below `md`.** Pane headers, workspace pills and tag
-  chips all grow on touch; they are deliberately small only on desktop.
+  chips all grow on touch; they are deliberately small only on desktop. Small
+  text links get the `.tap-target` class, which pads them to 44px below `md` and
+  releases above it. Inline links *inside prose* are the one exemption — a 44px
+  line box would wreck the paragraph, and WCAG 2.5.8 exempts them.
 
 ## The shell (`src/components/shell/`)
 
@@ -243,6 +252,15 @@ transition, and resolves it from an effect watching `usePathname()` — with a
 400ms timeout, so a slow route can never leave the screen frozen on a stale
 frame. Under `prefers-reduced-motion` it skips the transition entirely and just
 pushes.
+
+**The view-transition group animations are pinned off.** The browser's default
+group animation morphs the old box into the new one by interpolating `width`,
+`height` *and* `backdrop-filter` — layout work every frame, and a
+backdrop-filter on mobile, both of which this design forbids. `globals.css` sets
+`animation: none` on `::view-transition-group(root)` and `(workspace)` so the
+slide is carried entirely by `transform` on old/new. Confirm with
+`document.getAnimations()` during a swipe: nothing but `transform` and `opacity`
+should appear.
 
 Two items from the motion table are deliberately not built:
 
@@ -342,7 +360,9 @@ claiming a change works.
 - ✅ Phase 3 — the three responsive layout modes
 - ✅ Phase 4 — motion (see the `hypr-motion` skill, and "Motion" above for the
   two items deliberately left out)
-- ⬜ Phase 5 — `/mobile-audit` and fixes
+- ✅ Phase 5 — `/mobile-audit` and fixes. Measured on an emulated mid-range
+  Android (412×915, 4× CPU, Slow 4G): LCP 741ms, CLS 0.00, 0 long tasks, 139KB
+  JS gzipped, no third-party requests. Re-run it after any layout change.
 - ⬜ Phase 6 — CommandPalette, keybind footer, polish
 
 ---

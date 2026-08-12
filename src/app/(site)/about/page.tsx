@@ -37,7 +37,7 @@ export default async function AboutPage() {
                 href={link.href}
                 target={link.href.startsWith("mailto:") ? undefined : "_blank"}
                 rel="noopener noreferrer"
-                className="link-accent truncate"
+                className="link-accent tap-target truncate"
               >
                 {link.href.replace(/^mailto:|^https?:\/\//, "")}
               </a>
@@ -66,7 +66,7 @@ export default async function AboutPage() {
                 href={siteConfig.resume.path}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mono link-accent link-underline mt-8 inline-block"
+                className="mono link-accent link-underline tap-target mt-8"
               >
                 {siteConfig.resume.label} (PDF) ↗
               </a>

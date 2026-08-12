@@ -247,6 +247,33 @@ a {
   border-top: 1px solid var(--border);
 }
 
+/* Workspace pills shrink their type below sm so all five labels fit a 320px
+   screen without the row scrolling. This lives here rather than as a Tailwind
+   `text-[…]` utility because `.mono` above is unlayered, and unlayered rules
+   beat anything in `@layer utilities` — a utility would silently lose. */
+@media (width < 40rem) {
+  .workspace-pill {
+    font-size: 0.75rem;
+  }
+}
+
+/* A text link that still offers a 44px touch target below md, without changing
+   how it reads on desktop. Inline links inside prose are deliberately exempt —
+   a 44px line box would wreck the paragraph, and WCAG 2.5.8 exempts them. */
+.tap-target {
+  display: inline-flex;
+  align-items: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (width >= 48rem) {
+  .tap-target {
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
 /* At lg the public site is exactly one viewport tall and does not scroll —
    the panes scroll inside themselves instead.
 
@@ -350,6 +377,34 @@ main {
   to {
     transform: translateX(100%);
   }
+}
+
+/* The browser's own group animation morphs the old box into the new one by
+   interpolating `width`, `height` and `backdrop-filter`. That is layout work on
+   every frame, plus a backdrop-filter on mobile — both of which this design
+   forbids, and neither of which a slide needs. Pinning the group leaves the
+   motion entirely to `transform` on old/new.
+
+   Measured with `document.getAnimations()` during a swipe; see the Phase 5
+   audit. Without these rules the UA keyframes report
+   `backdropFilter,height,transform,width`. */
+::view-transition-group(root),
+::view-transition-group(workspace) {
+  animation: none;
+}
+
+/* The UA blends the pair with `plus-lighter` for a cross-fade. These slide as
+   opaque windows, so normal blending is what we want — and pinning the size
+   stops a tall route's snapshot being stretched into a short one's box. */
+::view-transition-image-pair(workspace) {
+  isolation: auto;
+}
+::view-transition-old(workspace),
+::view-transition-new(workspace) {
+  mix-blend-mode: normal;
+  height: 100%;
+  object-fit: none;
+  object-position: top left;
 }
 
 html[data-ws="forward"]::view-transition-new(workspace) {
