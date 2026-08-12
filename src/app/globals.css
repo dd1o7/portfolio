@@ -738,8 +738,31 @@ dialog.palette[open]::backdrop {
   font-size: 1.05em;
 }
 
-/* Heading anchors (rehype-slug) */
-.prose h2 > a,
-.prose h3 > a {
+/* Heading anchors.
+   `rehype-slug` gives every heading an id and `rehype-autolink-headings`
+   appends the link; this is what makes it visible. Hidden below md, where
+   there is no hover to reveal it and a `#` could never be a 44px target — the
+   ids still work, so the section is addressable either way. */
+.heading-anchor {
+  display: none;
+  margin-left: 0.4em;
+  color: var(--faint);
   text-decoration: none;
+  opacity: 0;
+  transition: opacity var(--transition), color var(--transition);
+}
+
+@media (width >= 48rem) {
+  .heading-anchor {
+    display: inline;
+  }
+
+  :is(.prose h2, .prose h3, .prose h4):hover > .heading-anchor,
+  .heading-anchor:focus-visible {
+    opacity: 1;
+  }
+
+  .heading-anchor:hover {
+    color: var(--accent);
+  }
 }

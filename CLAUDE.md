@@ -405,6 +405,22 @@ colour, and the element most likely to read as trying too hard.
   dark-only means pinning it to a single theme.
 - **The RSS feed carries summaries, not full bodies.** Article HTML contains
   rendered KaTeX markup that feed readers mangle; a link beats broken equations.
+  It covers **research, projects and /now together**, newest first, each item
+  tagged with a `<category>`. It was research-only, which meant the thing
+  published most often could not be followed at all. /now entries have no
+  `summary`, so they use `excerpt` — plain text taken from the Markdown source,
+  never from the rendered HTML, which would drag KaTeX's duplicated MathML in.
+
+- **Headings are linkable.** `rehype-slug` sets the ids and
+  `rehype-autolink-headings` appends the `#`. It is hidden below `md`: there is
+  no hover to reveal it and a `#` could never be a 44px target. The ids still
+  resolve, so sections stay addressable on any device.
+
+- **The contents list** in `MetaPane` comes from `extractHeadings()`, read back
+  out of the rendered HTML so the ids are guaranteed to match the anchors.
+  Desktop only — below `lg` the metadata pane sits *after* the article, where a
+  contents list would only be seen by someone who has already scrolled past
+  everything it points at.
 
 ## Verifying a redesign change
 

@@ -19,6 +19,7 @@ import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode, { type Options as PrettyCodeOptions } from "rehype-pretty-code";
 import rehypeStringify from "rehype-stringify";
 
@@ -91,9 +92,12 @@ const aboutSchema = z.object({
    Types
    ========================================================================== */
 
-export type Project = z.infer<typeof projectSchema> & { slug: string; html: string };
-export type Research = z.infer<typeof researchSchema> & { slug: string; html: string };
-export type NowEntry = z.infer<typeof nowSchema> & { slug: string; html: string };
+/** What every Markdown file gains once it has been read and rendered. */
+type Rendered = { slug: string; html: string; excerpt: string };
+
+export type Project = z.infer<typeof projectSchema> & Rendered;
+export type Research = z.infer<typeof researchSchema> & Rendered;
+export type NowEntry = z.infer<typeof nowSchema> & Rendered;
 export type About = z.infer<typeof aboutSchema> & { html: string };
 
 /** Anything that can appear in a tag listing. */
@@ -117,6 +121,22 @@ const processor = unified()
   .use(remarkMath)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeSlug)
+  // rehypeSlug already puts an id on every heading; this is what finally makes
+  // those ids reachable — a `#` a reader can click to copy a link to a section.
+  // Hidden below md, where there is no hover and a `#` could never be a 44px
+  // target; see `.heading-anchor` in globals.css.
+  .use(rehypeAutolinkHeadings, {
+    behavior: "append",
+    properties: { className: ["heading-anchor"], ariaLabel: "Link to this section" },
+    content: () => [
+      {
+        type: "element",
+        tagName: "span",
+        properties: { ariaHidden: "true" },
+        children: [{ type: "text", value: "#" }],
+      },
+    ],
+  })
   .use(rehypeKatex)
   .use(rehypePrettyCode, prettyCodeOptions)
   .use(rehypeStringify, { allowDangerousHtml: true });
@@ -125,6 +145,30 @@ const processor = unified()
 export async function renderMarkdown(markdown: string): Promise<string> {
   const file = await processor.process(markdown);
   return String(file);
+}
+
+/**
+ * The `<h2>`/`<h3>` headings of a rendered article, for the contents list in
+ * the metadata pane.
+ *
+ * Read back out of the HTML rather than collected during the pipeline: the ids
+ * are `rehype-slug`'s, so taking them from the output is the only way to be
+ * certain they match the anchors a reader will actually land on. Inner markup —
+ * inline code, maths, the appended `#` — is stripped to leave plain text.
+ */
+export function extractHeadings(html: string): { id: string; text: string; level: 2 | 3 }[] {
+  const out: { id: string; text: string; level: 2 | 3 }[] = [];
+  const heading = /<h([23])\s+id="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/g;
+
+  for (const match of html.matchAll(heading)) {
+    const text = match[3]
+      .replace(/<a\b[^>]*class="heading-anchor"[\s\S]*?<\/a>/g, "")
+      .replace(/<[^>]+>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (text) out.push({ id: match[2], text, level: Number(match[1]) as 2 | 3 });
+  }
+  return out;
 }
 
 /* ==========================================================================
@@ -152,11 +196,31 @@ function readDir(dir: string): string[] {
     .sort();
 }
 
+/**
+ * A plain-text opening for entries that carry no `summary` of their own — a
+ * /now update, say. Taken from the Markdown source rather than the rendered
+ * HTML on purpose: stripping tags out of the output would drag KaTeX's
+ * duplicated MathML along with it.
+ */
+function plainExcerpt(markdown: string, limit = 240): string {
+  const text = markdown
+    .replace(/```[\s\S]*?```/g, " ") // fenced code
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1") // links and images, keep the label
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "") // heading markers
+    .replace(/^\s{0,3}[-*+]\s+/gm, "") // list bullets
+    .replace(/[*_`>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (text.length <= limit) return text;
+  return text.slice(0, text.lastIndexOf(" ", limit)).trimEnd() + "…";
+}
+
 async function readOne<T extends z.ZodTypeAny>(
   dir: string,
   filename: string,
   schema: T,
-): Promise<z.infer<T> & { slug: string; html: string }> {
+): Promise<z.infer<T> & Rendered> {
   const relPath = path.join(dir, filename);
   const raw = fs.readFileSync(path.join(CONTENT_DIR, relPath), "utf8");
   const { data, content } = matter(raw);
@@ -172,7 +236,8 @@ async function readOne<T extends z.ZodTypeAny>(
     ...(parsed.data as object),
     slug: filename.replace(/\.mdx?$/, ""),
     html: await renderMarkdown(content),
-  } as z.infer<T> & { slug: string; html: string };
+    excerpt: plainExcerpt(content),
+  } as z.infer<T> & { slug: string; html: string; excerpt: string };
 }
 
 async function readAll<T extends z.ZodTypeAny>(dir: string, schema: T) {

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { MasterStack } from "@/components/shell/MasterStack";
 import { Pane } from "@/components/shell/Pane";
 import { MetaPane } from "@/components/shell/MetaPane";
-import { getResearch, getResearchItem } from "@/lib/content";
+import { extractHeadings, getResearch, getResearchItem } from "@/lib/content";
 import { formatDate } from "@/lib/utils";
 
 export async function generateStaticParams() {
@@ -61,7 +61,15 @@ export default async function ResearchItemPage({ params }: PageProps<"/research/
           </article>
         </Pane>
       }
-      stack={[<MetaPane key="meta" fields={fields} links={links} tags={item.tags} />]}
+      stack={[
+        <MetaPane
+          key="meta"
+          fields={fields}
+          links={links}
+          tags={item.tags}
+          headings={extractHeadings(item.html)}
+        />,
+      ]}
     />
   );
 }

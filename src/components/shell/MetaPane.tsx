@@ -17,10 +17,13 @@ export function MetaPane({
   fields,
   links,
   tags,
+  headings = [],
 }: {
   fields: Field[];
   links: ExternalLink[];
   tags: readonly string[];
+  /** `<h2>`/`<h3>` of the article, for the contents list. */
+  headings?: { id: string; text: string; level: 2 | 3 }[];
 }) {
   return (
     <Pane label="metadata">
@@ -32,6 +35,27 @@ export function MetaPane({
           </div>
         ))}
       </dl>
+
+      {/* Desktop only, and not for want of space: below `lg` this pane sits
+          *after* the article, so a contents list there would only ever be read
+          by someone who has already scrolled past everything it points at. */}
+      {headings.length > 1 && (
+        <nav aria-label="Contents" className="mt-6 hidden border-t border-[var(--border)] pt-5 lg:block">
+          <h2 className="mono text-[var(--dim)]">contents</h2>
+          <ul className="mt-2 flex flex-col gap-y-1">
+            {headings.map((heading) => (
+              <li key={heading.id} className={heading.level === 3 ? "pl-4" : undefined}>
+                <a
+                  href={`#${heading.id}`}
+                  className="mono text-[var(--text-2)] transition-colors hover:text-[var(--accent)]"
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
 
       {links.length > 0 && (
         <div className="mt-6 border-t border-[var(--border)] pt-5">

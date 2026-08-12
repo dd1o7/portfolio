@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { MasterStack } from "@/components/shell/MasterStack";
 import { Pane } from "@/components/shell/Pane";
 import { MetaPane } from "@/components/shell/MetaPane";
-import { getProject, getProjects } from "@/lib/content";
+import { extractHeadings, getProject, getProjects } from "@/lib/content";
 import { formatDate } from "@/lib/utils";
 
 export async function generateStaticParams() {
@@ -70,7 +70,15 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           </article>
         </Pane>
       }
-      stack={[<MetaPane key="meta" fields={fields} links={links} tags={project.tags} />]}
+      stack={[
+        <MetaPane
+          key="meta"
+          fields={fields}
+          links={links}
+          tags={project.tags}
+          headings={extractHeadings(project.html)}
+        />,
+      ]}
     />
   );
 }
