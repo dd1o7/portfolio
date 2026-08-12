@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { FilterableList } from "@/components/FilterableList";
+import { FilterPane } from "@/components/shell/FilterPane";
 import type { Entry } from "@/components/EntryList";
 import { getResearch } from "@/lib/content";
 
@@ -20,16 +20,5 @@ export default async function ResearchPage() {
     tags: [...item.tags],
   }));
 
-  return (
-    <div className="container-page py-16">
-      <header className="mb-8">
-        <h1 className="text-[var(--text-2xl)] font-semibold tracking-tight">Research</h1>
-        <p className="mt-2 text-[var(--text-muted)]">
-          Notes, paper reactions and writeups — mostly unfinished by design.
-        </p>
-      </header>
-
-      <FilterableList entries={entries} />
-    </div>
-  );
+  return <FilterPane label="~/research" entries={entries} />;
 }

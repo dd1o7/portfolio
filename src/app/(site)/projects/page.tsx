@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { FilterableList } from "@/components/FilterableList";
+import { FilterPane } from "@/components/shell/FilterPane";
 import type { Entry } from "@/components/EntryList";
 import { getProjects } from "@/lib/content";
 
@@ -21,16 +21,5 @@ export default async function ProjectsPage() {
     badge: project.status === "active" ? "active" : undefined,
   }));
 
-  return (
-    <div className="container-page py-16">
-      <header className="mb-8">
-        <h1 className="text-[var(--text-2xl)] font-semibold tracking-tight">Projects</h1>
-        <p className="mt-2 text-[var(--text-muted)]">
-          Things I have built, with enough detail to judge whether they work.
-        </p>
-      </header>
-
-      <FilterableList entries={entries} />
-    </div>
-  );
+  return <FilterPane label="~/projects" entries={entries} />;
 }

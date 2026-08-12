@@ -152,7 +152,7 @@ body {
 }
 
 ::selection {
-  background: var(--accent-subtle);
+  background: var(--border-focus);
   color: var(--text);
 }
 
@@ -192,12 +192,14 @@ a {
   letter-spacing: -0.01em;
 }
 
+/* Admin only. The public site labels sections with a pane header instead, and
+   its interface chrome is lowercase — see the wm-shell conventions. */
 .label {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-faint);
+  color: var(--faint);
 }
 
 .link-accent {
@@ -205,12 +207,12 @@ a {
   transition: color var(--transition);
 }
 .link-accent:hover {
-  color: var(--accent-hover);
+  color: var(--accent-bright);
 }
 
 .link-underline {
   text-decoration: underline;
-  text-decoration-color: var(--border-strong);
+  text-decoration-color: var(--border-focus);
   text-underline-offset: 3px;
   transition: text-decoration-color var(--transition);
 }
@@ -248,17 +250,19 @@ a {
 .prose {
   font-size: var(--text-md);
   line-height: var(--leading-prose);
-  color: var(--text);
+  color: var(--text-2);
 }
 
 .prose > * + * {
   margin-top: 1.25em;
 }
 
+/* Headings cap at weight 500 — hierarchy comes from size and space. */
 .prose h2,
 .prose h3,
 .prose h4 {
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--text);
   line-height: var(--leading-tight);
   letter-spacing: -0.015em;
   margin-top: 2.25em;
@@ -274,7 +278,7 @@ a {
 }
 .prose h4 {
   font-size: var(--text-md);
-  color: var(--text-muted);
+  color: var(--muted);
 }
 
 .prose a {
@@ -290,6 +294,7 @@ a {
 
 .prose strong {
   font-weight: 600;
+  color: var(--text);
 }
 
 .prose ul,
@@ -303,16 +308,16 @@ a {
   list-style: decimal;
 }
 .prose li::marker {
-  color: var(--text-faint);
+  color: var(--faint);
 }
 .prose li + li {
   margin-top: 0.4em;
 }
 
 .prose blockquote {
-  border-left: 2px solid var(--border-strong);
+  border-left: 2px solid var(--border-focus);
   padding-left: 1.1em;
-  color: var(--text-muted);
+  color: var(--muted);
   font-style: italic;
 }
 
@@ -333,7 +338,7 @@ a {
 .prose :not(pre) > code {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.875em;
-  background: var(--bg-subtle);
+  background: var(--inset);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 0.12em 0.35em;
@@ -344,7 +349,7 @@ a {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--text-sm);
   line-height: 1.65;
-  background: var(--bg-subtle) !important;
+  background: var(--inset) !important;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1rem 1.1rem;
@@ -366,8 +371,8 @@ a {
 .prose [data-rehype-pretty-code-title] {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--text-xs);
-  color: var(--text-muted);
-  background: var(--bg-subtle);
+  color: var(--muted);
+  background: var(--inset);
   border: 1px solid var(--border);
   border-bottom: 0;
   border-radius: var(--radius) var(--radius) 0 0;
@@ -396,8 +401,8 @@ a {
   text-align: left;
 }
 .prose th {
-  background: var(--bg-subtle);
-  font-weight: 600;
+  background: var(--inset);
+  font-weight: 500;
 }
 
 /* Math (KaTeX). Display equations scroll rather than overflow the page. */

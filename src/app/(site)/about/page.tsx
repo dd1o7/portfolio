@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { Pane } from "@/components/shell/Pane";
 import { getAbout } from "@/lib/content";
 import { hasResume } from "@/lib/resume";
 import { GitHubActivity } from "@/components/GitHubActivity";
-import { siteConfig } from "@/site.config";
+import { contactLinks, siteConfig } from "@/site.config";
 
 export const metadata: Metadata = {
   title: "About",
@@ -14,40 +15,57 @@ export const revalidate = 3600;
 
 export default async function AboutPage() {
   const about = await getAbout();
+  const links = contactLinks();
 
   return (
-    <div className="container-page py-16">
-      <header className="mb-8">
-        <h1 className="text-[var(--text-2xl)] font-semibold tracking-tight">
-          {about?.title ?? "About"}
-        </h1>
-      </header>
+    <>
+      <Pane label="~/about" focused>
+        <div className="max-w-[var(--container)]">
+          {about ? (
+            <div className="prose" dangerouslySetInnerHTML={{ __html: about.html }} />
+          ) : (
+            <p className="mono text-[var(--faint)]">
+              add content/site/about.md to fill this page.
+            </p>
+          )}
 
-      {about ? (
-        <div className="prose" dangerouslySetInnerHTML={{ __html: about.html }} />
-      ) : (
-        <p className="mono text-[var(--text-faint)]">
-          Add content/site/about.md to fill this page.
-        </p>
-      )}
-
-      {hasResume() && (
-        <div className="hairline mt-12 pt-6">
-          <a
-            href={siteConfig.resume.path}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mono link-accent link-underline"
-          >
-            {siteConfig.resume.label} (PDF) ↗
-          </a>
+          {hasResume() && (
+            <a
+              href={siteConfig.resume.path}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mono link-accent link-underline mt-8 inline-block"
+            >
+              {siteConfig.resume.label} (PDF) ↗
+            </a>
+          )}
         </div>
-      )}
+      </Pane>
 
       {/* Awaited directly rather than streamed: this page is statically
           generated and revalidated hourly, so the fetch happens in the
           background and never on a visitor's request. */}
       <GitHubActivity />
-    </div>
+
+      {links.length > 0 && (
+        <Pane label="~/contact">
+          <ul className="mono flex flex-col gap-y-1">
+            {links.map((link) => (
+              <li key={link.label} className="flex items-baseline gap-3">
+                <span className="w-[4.5rem] shrink-0 text-[var(--dim)]">{link.label}</span>
+                <a
+                  href={link.href}
+                  target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+                  rel="noopener noreferrer"
+                  className="link-accent truncate"
+                >
+                  {link.href.replace(/^mailto:|^https?:\/\//, "")}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Pane>
+      )}
+    </>
   );
 }

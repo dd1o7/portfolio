@@ -1,17 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { EntryList, type Entry } from "./EntryList";
+import { Pane } from "./Pane";
+import { EntryList, type Entry } from "@/components/EntryList";
 import { cx } from "@/lib/utils";
 
 /**
- * An entry list with tag filters above it.
+ * A listing pane: tag filters above the standard entry list.
  *
- * Filtering happens in the browser with no page load. Tags are derived from the
- * entries themselves, so a new tag in a Markdown file appears here automatically
- * with nothing else to update.
+ * This is a client component only so the pane's counter can track the filter —
+ * `3 / 12` has to change when you click a tag, and the counter lives in the
+ * pane header, above the list. Filtering itself still happens in the browser
+ * with no page load, and the tags are derived from the entries, so a new tag in
+ * a Markdown file appears here with nothing else to update.
  */
-export function FilterableList({ entries }: { entries: Entry[] }) {
+export function FilterPane({ label, entries }: { label: string; entries: Entry[] }) {
   const [active, setActive] = useState<string | null>(null);
 
   const tags = useMemo(() => {
@@ -28,9 +31,9 @@ export function FilterableList({ entries }: { entries: Entry[] }) {
   );
 
   return (
-    <>
+    <Pane label={label} counter={`${visible.length} / ${entries.length}`} focused>
       {tags.length > 1 && (
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div className="mb-5 flex flex-wrap gap-2">
           <FilterChip label="all" active={active === null} onClick={() => setActive(null)} />
           {tags.map(([tag, count]) => (
             <FilterChip
@@ -45,7 +48,7 @@ export function FilterableList({ entries }: { entries: Entry[] }) {
       )}
 
       <EntryList entries={visible} />
-    </>
+    </Pane>
   );
 }
 
@@ -66,14 +69,16 @@ function FilterChip({
       onClick={onClick}
       aria-pressed={active}
       className={cx(
-        "mono rounded-[var(--radius-sm)] border px-2 py-1 transition-colors",
+        "mono inline-flex items-center rounded-[var(--radius-sm)] border px-3 transition-colors",
+        // Deliberately small only on desktop — a 44px target below md.
+        "h-11 md:h-7 md:px-2.5",
         active
-          ? "border-[var(--accent)] bg-[var(--accent-subtle)] text-[var(--accent)]"
-          : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]",
+          ? "border-[var(--border-focus)] bg-[var(--accent-wash)] text-[var(--accent-bright)]"
+          : "border-[var(--border)] text-[var(--muted)] hover:border-[var(--border-focus)] hover:text-[var(--text)]",
       )}
     >
       {label}
-      {count !== undefined && <span className="ml-1.5 text-[var(--text-faint)]">{count}</span>}
+      {count !== undefined && <span className="ml-1.5 text-[var(--faint)]">{count}</span>}
     </button>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Pane } from "@/components/shell/Pane";
 import { EntryList, type Entry } from "@/components/EntryList";
 import { getAllTags, getItemsByTag, slugifyTag } from "@/lib/content";
 
@@ -33,19 +34,14 @@ export default async function TagPage({ params }: PageProps<"/tags/[tag]">) {
   }));
 
   return (
-    <div className="container-page py-16">
+    <Pane label={`~/tags/${slugifyTag(tag)}`} counter={`${items.length}`} focused>
       <Link href="/projects" className="mono link-accent">
         ← all work
       </Link>
 
-      <header className="mt-6 mb-8">
-        <h1 className="text-[var(--text-2xl)] font-semibold tracking-tight">{displayTag}</h1>
-        <p className="mono mt-2 text-[var(--text-muted)]">
-          {items.length} {items.length === 1 ? "item" : "items"}
-        </p>
-      </header>
+      <h1 className="mt-5 mb-6 text-[var(--text-2xl)] font-medium tracking-tight">{displayTag}</h1>
 
       <EntryList entries={entries} />
-    </div>
+    </Pane>
   );
 }

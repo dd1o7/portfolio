@@ -54,7 +54,10 @@ src/
   lib/content.ts    read + validate + render Markdown (used by every page)
   lib/utils.ts      date formatting, cx
   lib/resume.ts     build-time check for public/resume.pdf
-  components/       EntryList (presentational), FilterableList (client), header, footer
+  components/
+    EntryList.tsx   the one list layout — homepage, listings, tag pages
+    shell/          the window-manager chrome (see below)
+    SiteFooter.tsx  replaced by KeybindFooter in Phase 6
 ```
 
 Note the `src/` prefix. Paths in any imported design kit that say `app/**` or
@@ -182,6 +185,32 @@ writing code.
 - **Touch targets are ≥44px below `md`.** Pane headers, workspace pills and tag
   chips all grow on touch; they are deliberately small only on desktop.
 
+## The shell (`src/components/shell/`)
+
+`Pane` never knows what is inside it, and page content never renders its own
+border, background or title bar. A page returns a fragment of `Pane`s; the layout
+stacks them. **The first pane a route renders is its master, the rest are its
+stack** — Phase 3 tiles them in exactly that DOM order, so do not reorder panes
+for visual reasons.
+
+| Component | Role |
+|---|---|
+| `Waybar` | Top bar. Server component, so `hasResume()` keeps its build-time check. |
+| `WorkspacePills` | The nav. Exports `workspaces` — the single source of truth for workspace order. |
+| `Pane` / `PaneHeader` | The window and its title bar. `label`, `counter`, `focused`. |
+| `FilterPane` | Listing pane. Client-only so the header counter tracks the tag filter. |
+| `MetaPane` | The stack pane beside an article: frontmatter that is not the body. |
+| `Clock`, `AmbientBackground` | Waybar clock; the one fixed glow-and-grid layer. |
+
+Pane labels are lowercase, filesystem-looking, JetBrains Mono. Routes map to
+`~/home`, `~/projects`, `~/research`, `~/now`, `~/about`, `~/tags/<tag>`,
+`~/projects/<slug>.md`, plus the stack panes `metadata`, `gh — <handle>` and
+`~/contact`.
+
+A pane with nothing in it is never rendered — `GitHubActivity` owns its own
+`Pane` for exactly this reason, so that an unavailable GitHub API produces no
+window rather than an empty one.
+
 ## Layout at each breakpoint
 
 | Width | Layout |
@@ -247,8 +276,8 @@ claiming a change works.
 
 ## Phase status
 
-- ⬜ Phase 1 — tokens, fonts, Waybar, WorkspacePills, Pane, PaneHeader, ambient layer
-- ⬜ Phase 2 — existing routes wired through the shell
+- ✅ Phase 1 — tokens, fonts, Waybar, WorkspacePills, Pane, PaneHeader, ambient layer
+- ✅ Phase 2 — existing routes wired through the shell
 - ⬜ Phase 3 — the three responsive layout modes
 - ⬜ Phase 4 — motion (see the `hypr-motion` skill)
 - ⬜ Phase 5 — `/mobile-audit` and fixes

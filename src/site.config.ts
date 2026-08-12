@@ -59,3 +59,20 @@ export const siteConfig = {
 } as const;
 
 export type SiteConfig = typeof siteConfig;
+
+/**
+ * The links above that actually have a value, in a fixed order.
+ *
+ * Leaving one empty in `links` hides it everywhere it appears, so there is only
+ * ever one place to edit.
+ */
+export function contactLinks(): { label: string; href: string }[] {
+  const { email, github, linkedin, x, scholar } = siteConfig.links;
+  return [
+    email && { label: "email", href: `mailto:${email}` },
+    github && { label: "github", href: github },
+    linkedin && { label: "linkedin", href: linkedin },
+    x && { label: "x", href: x },
+    scholar && { label: "scholar", href: scholar },
+  ].filter(Boolean) as { label: string; href: string }[];
+}

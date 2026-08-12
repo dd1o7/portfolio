@@ -5,15 +5,16 @@ import { SiteFooter } from "@/components/SiteFooter";
 /**
  * Chrome for the public site. The admin does not use this.
  *
- * Phase 1 lays out panes in a plain vertical flow. The tiling containers
- * (MasterStack, the split divider, the mobile swiper) arrive in Phase 3.
+ * Phase 2 stacks a route's panes vertically in DOM order. That order is the one
+ * Phase 3 tiles into master + stack on desktop, so the first pane a page renders
+ * is its master and the rest are its stack.
  */
 export default function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <AmbientBackground />
       <Waybar />
-      <main className="flex-1 px-3 py-3">{children}</main>
+      <main className="flex flex-1 flex-col gap-3 p-3">{children}</main>
       <SiteFooter />
     </>
   );

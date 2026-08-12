@@ -1,18 +1,27 @@
 import Link from "next/link";
 import { Pane } from "@/components/shell/Pane";
 import { EntryList, type Entry } from "@/components/EntryList";
-import { getCurrentNow, getFeaturedProjects, getResearch } from "@/lib/content";
+import { getCurrentNow, getFeaturedProjects, getProjects, getResearch } from "@/lib/content";
 import { relativeDate } from "@/lib/utils";
 import { siteConfig } from "@/site.config";
 
+/**
+ * The home workspace.
+ *
+ * One master pane and three stack panes, in the order Phase 3 will tile them:
+ * the intro is the master, `~/now`, `~/projects` and `~/research` are the stack.
+ * A stack pane with nothing in it is not rendered at all — an empty window is
+ * worse than a missing one.
+ */
 export default async function HomePage() {
-  const [now, projects, research] = await Promise.all([
+  const [now, featured, allProjects, research] = await Promise.all([
     getCurrentNow(),
     getFeaturedProjects(3),
+    getProjects(),
     getResearch(),
   ]);
 
-  const projectEntries: Entry[] = projects.map((p) => ({
+  const projectEntries: Entry[] = featured.map((p) => ({
     slug: p.slug,
     href: `/projects/${p.slug}`,
     title: p.title,
@@ -32,63 +41,48 @@ export default async function HomePage() {
   }));
 
   return (
-    /* One pane, wrapping the content this page already had. Phase 2 wires the
-       routes through the shell properly and splits this into master + stack. */
-    <Pane label="~/home" focused>
-      <div className="container-page py-6">
-        {/* Intro -------------------------------------------------------- */}
-        <section>
+    <>
+      <Pane label="~/home" focused>
+        <div className="max-w-[var(--container)]">
           <h1 className="text-[var(--text-3xl)] font-medium tracking-tight">{siteConfig.name}</h1>
           <p className="mono mt-2 text-[var(--muted)]">{siteConfig.tagline}</p>
-          <p className="mt-6 max-w-[38rem] text-[var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
+          <p className="mt-6 text-[var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
             {siteConfig.intro}
           </p>
-        </section>
+        </div>
+      </Pane>
 
-        {/* Currently ---------------------------------------------------- */}
-        {now && (
-          <section className="mt-14">
-            <div className="flex items-baseline justify-between gap-4">
-              <h2 className="label">Currently</h2>
-              <span className="mono text-[var(--faint)]">{relativeDate(now.date)}</span>
-            </div>
-            <div
-              className="prose mt-4 border-l-2 border-[var(--accent)] pl-5"
-              dangerouslySetInnerHTML={{ __html: now.html }}
-            />
-            <Link href="/now" className="mono link-accent mt-4 inline-block">
-              all updates →
-            </Link>
-          </section>
-        )}
+      {now && (
+        <Pane label="~/now" counter={relativeDate(now.date)}>
+          <div
+            className="prose max-w-[var(--container)]"
+            dangerouslySetInnerHTML={{ __html: now.html }}
+          />
+          <MoreLink href="/now">all updates</MoreLink>
+        </Pane>
+      )}
 
-        {/* Projects ----------------------------------------------------- */}
-        {projectEntries.length > 0 && (
-          <section className="mt-16">
-            <SectionHeading label="Selected projects" href="/projects" />
-            <EntryList entries={projectEntries} />
-          </section>
-        )}
+      {projectEntries.length > 0 && (
+        <Pane label="~/projects" counter={`${projectEntries.length} / ${allProjects.length}`}>
+          <EntryList entries={projectEntries} />
+          <MoreLink href="/projects">all projects</MoreLink>
+        </Pane>
+      )}
 
-        {/* Research ----------------------------------------------------- */}
-        {researchEntries.length > 0 && (
-          <section className="mt-16">
-            <SectionHeading label="Recent writing" href="/research" />
-            <EntryList entries={researchEntries} />
-          </section>
-        )}
-      </div>
-    </Pane>
+      {researchEntries.length > 0 && (
+        <Pane label="~/research" counter={`${researchEntries.length} / ${research.length}`}>
+          <EntryList entries={researchEntries} />
+          <MoreLink href="/research">all research</MoreLink>
+        </Pane>
+      )}
+    </>
   );
 }
 
-function SectionHeading({ label, href }: { label: string; href: string }) {
+function MoreLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <div className="mb-4 flex items-baseline justify-between gap-4">
-      <h2 className="label">{label}</h2>
-      <Link href={href} className="mono link-accent">
-        all →
-      </Link>
-    </div>
+    <Link href={href} className="mono link-accent mt-5 inline-block">
+      {children} →
+    </Link>
   );
 }
