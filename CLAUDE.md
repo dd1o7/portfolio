@@ -380,13 +380,14 @@ claiming a change works.
   JS gzipped, no third-party requests. Re-run it after any layout change.
 - ✅ Phase 6 — CommandPalette, keybind footer, polish
 
-The polish pass caught a bug that predated the redesign: **every
-`text-[var(--text-*)]` class was compiling to `color`, not `font-size`.**
-Tailwind cannot tell whether a bare `var()` is a length or a colour and assumes
+The polish pass caught a bug that predated the redesign: **an arbitrary text
+utility built from a bare `var()` compiles to `color`, not `font-size`.**
+Tailwind cannot tell whether the variable holds a length or a colour and assumes
 colour, so the declaration was invalid and every heading rendered at inherited
 body size — the homepage `h1` measured 15px where the token says 36px. The fix
-is the explicit hint, `text-[length:var(--text-3xl)]`. Colour tokens
-(`--text-muted`, `--text-2`, …) were correct as they were and were left alone.
+is the explicit `length:` hint, as in `text-[length:var(--text-3xl)]`. Colour
+tokens (`--text-muted`, `--text-2`, …) were correct as they were and were left
+alone.
 
 ---
 
