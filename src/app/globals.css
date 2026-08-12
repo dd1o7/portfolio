@@ -216,6 +216,14 @@ html {
   .palette-panel {
     animation-name: fade-in !important;
   }
+
+  /* The cursor stops rather than speeding up. Without this the blanket
+     `animation-duration: 100ms` above would turn a calm 1.2s blink into a
+     single hard flash on load. */
+  .prompt-cursor {
+    animation: none !important;
+    opacity: 1;
+  }
 }
 
 body {
@@ -472,6 +480,38 @@ html[data-ws="back"]::view-transition-new(workspace) {
 }
 html[data-ws="back"]::view-transition-old(workspace) {
   animation: ws-exit-right 300ms var(--ease-wind) both;
+}
+
+/* A terminal block cursor, for the end of the homepage heading — the one place
+   the window-manager metaphor is allowed to speak inside the content.
+
+   Sized to cap height rather than line height, so it reads as one character
+   cell sitting on the baseline instead of a bar spanning the leading. It fades
+   to 0.15 rather than to zero: a hard on/off blink is twitchy at this size,
+   and a floor keeps the shape present between beats.
+
+   Purely decorative — `aria-hidden`, carries no meaning, and safe to delete.
+   The name avoids Tailwind's `cursor-*` and `caret-*` namespaces. */
+.prompt-cursor {
+  display: inline-block;
+  width: 0.46em;
+  height: 0.72em;
+  margin-left: 0.16em;
+  vertical-align: baseline;
+  border-radius: 1.5px;
+  background: var(--accent);
+  animation: prompt-blink 1.2s var(--ease-smooth) infinite;
+}
+
+@keyframes prompt-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0.15;
+  }
 }
 
 /* ============================================================================

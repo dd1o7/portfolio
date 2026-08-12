@@ -277,6 +277,19 @@ slide is carried entirely by `transform` on old/new. Confirm with
 `document.getAnimations()` during a swipe: nothing but `transform` and `opacity`
 should appear.
 
+**The block cursor after the homepage heading** (`.prompt-cursor`) is the one
+place the window-manager metaphor speaks inside the content. It is decorative —
+`aria-hidden`, contributes nothing to the accessible name, safe to delete. Note
+that the blanket `animation-duration: 100ms` in the reduced-motion block would
+turn its calm 1.2s blink into a single hard flash, so that block disables it
+explicitly and leaves it solid. Any future looping animation needs the same
+treatment.
+
+The typing effect the original brief describes is **deliberately not built**: it
+delays the most important text on the page behind an animation, can look broken
+on a slow device, and has to be safe to remove for reduced-motion users anyway.
+The cursor gives the same signal at no cost.
+
 Two items from the motion table are deliberately not built:
 
 - **Finger-following swipe.** The mobile slide fires on release, not during the

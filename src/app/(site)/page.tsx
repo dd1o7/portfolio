@@ -87,6 +87,7 @@ export default async function HomePage() {
           <div className="max-w-[var(--container)]">
             <h1 className="text-[length:var(--text-3xl)] font-medium tracking-tight">
               {siteConfig.name}
+              <span aria-hidden="true" className="prompt-cursor" />
             </h1>
             <p className="mono mt-2 text-[var(--muted)]">{siteConfig.tagline}</p>
             <p className="mt-6 text-[length:var(--text-md)] leading-[var(--leading-prose)] text-[var(--text-2)]">
