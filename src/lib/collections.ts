@@ -25,6 +25,15 @@ export type Collection = {
   filename: "slug" | "date";
   /** Where this appears on the public site. */
   urlBase?: string;
+  /**
+   * False for a fixed set of files that must not be created or deleted — the
+   * standing pages. Removing `home.md` would not break the build (the homepage
+   * falls back to `siteConfig.intro`), but it is never what you meant to do
+   * from a dashboard.
+   */
+  creatable?: boolean;
+  /** Public URL per slug, for collections whose entries do not share a base. */
+  urls?: Record<string, string>;
 };
 
 const commonTail: Field[] = [
@@ -32,6 +41,29 @@ const commonTail: Field[] = [
 ];
 
 export const collections: Record<string, Collection> = {
+  /**
+   * The standing pages — the two routes whose text is prose rather than a
+   * collection. They share `content/site/`, so they are one editable group
+   * rather than two special cases, and the save route needs no changes.
+   */
+  pages: {
+    key: "pages",
+    label: "Page",
+    labelPlural: "Pages",
+    dir: "content/site",
+    filename: "slug",
+    creatable: false,
+    urls: { home: "/", about: "/about" },
+    fields: [
+      {
+        name: "title",
+        label: "Title",
+        type: "text",
+        help: "Used on /about. The homepage shows your name instead.",
+      },
+    ],
+  },
+
   projects: {
     key: "projects",
     label: "Project",

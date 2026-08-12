@@ -738,6 +738,81 @@ dialog.palette[open]::backdrop {
   font-size: 1.05em;
 }
 
+/* Obsidian / GitHub callouts: `> [!note]`, `> [!warning]`, and friends.
+   One neutral treatment with a coloured left rule, rather than five tinted
+   boxes — a research note should not look like a status page. */
+.prose .markdown-alert {
+  margin-block: 1.5em;
+  padding: 0.9em 1.1em;
+  border-left: 2px solid var(--border-focus);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--inset);
+}
+.prose .markdown-alert > :first-child {
+  margin-top: 0;
+}
+.prose .markdown-alert > :last-child {
+  margin-bottom: 0;
+}
+.prose .markdown-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.4em;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--text-sm);
+  text-transform: lowercase;
+  letter-spacing: -0.01em;
+  color: var(--accent-bright);
+}
+.prose .markdown-alert-title svg {
+  width: 1em;
+  height: 1em;
+}
+.prose .markdown-alert-warning,
+.prose .markdown-alert-caution {
+  border-left-color: var(--status-draft);
+}
+.prose .markdown-alert-warning .markdown-alert-title,
+.prose .markdown-alert-caution .markdown-alert-title {
+  color: var(--status-draft);
+}
+
+/* Obsidian's ==highlight==. Tinted rather than block-filled, so a highlighted
+   phrase still reads as part of the sentence. */
+.prose mark {
+  padding: 0.1em 0.25em;
+  border-radius: var(--radius-sm);
+  background: var(--accent-wash);
+  color: var(--text);
+}
+
+/* GFM task lists, which arrive with remark-gfm. */
+.prose li:has(> input[type="checkbox"]) {
+  list-style: none;
+  margin-left: -1.4em;
+}
+.prose input[type="checkbox"] {
+  margin-right: 0.5em;
+  accent-color: var(--accent);
+}
+
+/* GFM footnotes. */
+.prose .footnotes {
+  margin-top: 3em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+.prose .footnotes h2 {
+  font-size: var(--text-sm);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  text-transform: lowercase;
+  color: var(--dim);
+  margin-top: 0;
+}
+
 /* Heading anchors.
    `rehype-slug` gives every heading an id and `rehype-autolink-headings`
    appends the link; this is what makes it visible. Hidden below md, where

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { collectionList } from "@/lib/collections";
 import { isGitHubConfigured, listFiles } from "@/lib/github";
-import { getNowEntries, getProjects, getResearch } from "@/lib/content";
+import { getAbout, getHome, getNowEntries, getProjects, getResearch } from "@/lib/content";
 import { daysSince, relativeDate } from "@/lib/utils";
 import { NotConfigured } from "@/components/admin/NotConfigured";
 
@@ -28,24 +28,31 @@ async function rowsFor(dir: string, titles: Map<string, string>): Promise<Row[]>
 export default async function AdminDashboard() {
   if (!isGitHubConfigured()) return <NotConfigured />;
 
-  const [projects, research, now] = await Promise.all([
+  const [projects, research, now, home, about] = await Promise.all([
     getProjects(),
     getResearch(),
     getNowEntries(),
+    getHome(),
+    getAbout(),
   ]);
 
   const titlesByCollection: Record<string, Map<string, string>> = {
+    pages: new Map([
+      ["home", home ? "Homepage introduction" : "Homepage introduction (not created yet)"],
+      ["about", about?.title ?? "About"],
+    ]),
     projects: new Map(projects.map((p) => [p.slug, p.title])),
     research: new Map(research.map((r) => [r.slug, r.title])),
     now: new Map(now.map((n) => [n.slug, n.title ?? n.slug])),
   };
 
-  let sections: { key: string; label: string; rows: Row[] }[];
+  let sections: { key: string; label: string; creatable: boolean; rows: Row[] }[];
   try {
     sections = await Promise.all(
       collectionList.map(async (collection) => ({
         key: collection.key,
         label: collection.labelPlural,
+        creatable: collection.creatable !== false,
         rows: await rowsFor(collection.dir, titlesByCollection[collection.key] ?? new Map()),
       })),
     );
@@ -91,9 +98,11 @@ export default async function AdminDashboard() {
         <section key={section.key} className="mt-12">
           <div className="mb-3 flex items-baseline justify-between gap-4">
             <h2 className="label">{section.label}</h2>
-            <Link href={`/admin/edit/${section.key}/new`} className="mono link-accent">
-              + new
-            </Link>
+            {section.creatable && (
+              <Link href={`/admin/edit/${section.key}/new`} className="mono link-accent">
+                + new
+              </Link>
+            )}
           </div>
 
           {section.rows.length === 0 ? (

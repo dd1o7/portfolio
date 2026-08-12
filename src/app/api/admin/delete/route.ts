@@ -25,6 +25,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
+  if (collection.creatable === false) {
+    return NextResponse.json(
+      { error: `${collection.labelPlural} are standing pages and cannot be deleted.` },
+      { status: 400 },
+    );
+  }
+
   const filePath = `${collection.dir}/${slug}.md`;
 
   try {

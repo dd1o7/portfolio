@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       slug,
       sha: result.sha,
       commitUrl: result.commitUrl,
-      url: collection.urlBase ? `${collection.urlBase}/${slug}` : undefined,
+      url: collection.urls?.[slug] ?? (collection.urlBase ? `${collection.urlBase}/${slug}` : undefined),
     });
   } catch (error) {
     if (error instanceof GitHubError) {

@@ -68,6 +68,7 @@ export default async function EditPage({ params }: PageProps<"/admin/edit/[colle
         initialFrontmatter={frontmatter}
         initialBody={body}
         sha={sha}
+        deletable={collection.creatable !== false}
       />
     </div>
   );

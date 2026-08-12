@@ -14,6 +14,8 @@ type Props = {
   initialFrontmatter: Record<string, unknown>;
   initialBody: string;
   sha?: string;
+  /** False for standing pages, which must not be removed from a dashboard. */
+  deletable?: boolean;
 };
 
 type Status =
@@ -29,6 +31,7 @@ export function EntryForm({
   initialFrontmatter,
   initialBody,
   sha,
+  deletable = true,
 }: Props) {
   const router = useRouter();
   const [data, setData] = useState<Record<string, unknown>>(initialFrontmatter);
@@ -124,7 +127,7 @@ export function EntryForm({
             {status.kind === "saving" ? "publishing…" : slug ? "save changes" : "publish"}
           </button>
 
-          {slug && (
+          {slug && deletable && (
             <button
               type="button"
               onClick={() => (confirmDelete ? remove() : setConfirmDelete(true))}

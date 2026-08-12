@@ -12,10 +12,13 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { z } from "zod";
+import { visit } from "unist-util-visit";
+import type { Root, Text, PhrasingContent } from "mdast";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { remarkAlert } from "remark-github-blockquote-alert";
 import remarkRehype from "remark-rehype";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
@@ -115,10 +118,49 @@ const prettyCodeOptions: PrettyCodeOptions = {
   keepBackground: false,
 };
 
+/**
+ * Obsidian's `==highlight==`.
+ *
+ * A local plugin rather than a dependency: it is one pattern over text nodes.
+ * No guard is needed for code or maths — their content is a raw string, never
+ * child text nodes, so `visit` never reaches inside them.
+ */
+function remarkHighlight() {
+  const pattern = /==([^=]+)==/;
+
+  return (tree: Root) => {
+    visit(tree, "text", (node: Text, index, parent) => {
+      if (!parent || index === undefined || !pattern.test(node.value)) return;
+
+      const parts: PhrasingContent[] = [];
+      let rest = node.value;
+      let match: RegExpExecArray | null;
+
+      while ((match = pattern.exec(rest)) !== null) {
+        if (match.index > 0) parts.push({ type: "text", value: rest.slice(0, match.index) });
+        parts.push({
+          type: "strong",
+          // `hName` tells remark-rehype to emit <mark> rather than <strong>.
+          data: { hName: "mark" },
+          children: [{ type: "text", value: match[1] }],
+        });
+        rest = rest.slice(match.index + match[0].length);
+      }
+      if (rest) parts.push({ type: "text", value: rest });
+
+      (parent.children as PhrasingContent[]).splice(index, 1, ...parts);
+      return index + parts.length;
+    });
+  };
+}
+
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
   .use(remarkMath)
+  // Obsidian / GitHub callouts: `> [!note]`, `> [!warning]`, and friends.
+  .use(remarkAlert)
+  .use(remarkHighlight)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeSlug)
   // rehypeSlug already puts an id on every heading; this is what finally makes
