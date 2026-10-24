@@ -4,7 +4,7 @@ summary: Three small simulations — a random walk, radioactive decay, and a toy
 date: 2026-10-23
 tags: [scientific computing, Monte Carlo, statistics]
 status: shipped
-draft: true
+draft: false
 stack: [Python, NumPy, Matplotlib]
 links:
   repo: https://github.com/dd1o7/monte-carlo-physics

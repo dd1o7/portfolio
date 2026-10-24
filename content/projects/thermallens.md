@@ -5,7 +5,7 @@ date: 2026-10-24
 tags: [machine learning, PINNs, inverse problems]
 status: shipped
 featured: true
-draft: true
+draft: false
 stack: [PyTorch, NumPy, SciPy]
 links:
   repo: https://github.com/dd1o7/ThermalLens
