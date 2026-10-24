@@ -48,12 +48,21 @@ export const metadata: Metadata = {
  * The site is dark only, so there is no theme script here. `color-scheme: dark`
  * in globals.css and the meta tag below are what stop the browser painting a
  * white ground before our CSS lands.
+ *
+ * `suppressHydrationWarning` on <html> is for browser extensions, not for our
+ * own code. Dark Reader and similar extensions add attributes to <html>
+ * (`data-darkreader-mode`, …) before React hydrates, and React reports the
+ * mismatch it cannot explain. The flag applies to this element's own
+ * attributes only — one level deep, not to children — so a genuine mismatch
+ * anywhere inside the tree is still reported. Without it the dev overlay cries
+ * wolf on every page load for anyone running such an extension.
  */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${serif.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <meta name="theme-color" content="#000000" />
